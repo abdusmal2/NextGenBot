@@ -41,6 +41,13 @@ telegram_app = Application.builder().token(BOT_TOKEN).build()
 
 # START COMMAND
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    chat_id = update.effective_chat.id
+
+    await update.message.reply_text(
+        f"Group ID:\n{chat_id}"
+    )
 
     user = update.effective_user
 
@@ -137,6 +144,7 @@ telegram_app.add_handler(
     CallbackQueryHandler(button_handler)
 )
 
+telegram_app.add_handler(CommandHandler("groupid", groupid))
 
 @app.on_event("startup")
 async def startup():
