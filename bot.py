@@ -41,15 +41,12 @@ telegram_app = Application.builder().token(BOT_TOKEN).build()
 
 # START COMMAND
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    chat_id = update.effective_chat.id
-
-    await update.message.reply_text(
-        f"Group ID:\n{chat_id}"
-    )
 
     user = update.effective_user
+
+    # Ignore groups
+    if update.effective_chat.type != "private":
+        return
 
     cursor.execute(
         "INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)",
@@ -78,6 +75,16 @@ async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "💎 You are to pay ₦500 to get access 💎",
         reply_markup=reply_markup
+    )
+
+
+# GROUP ID COMMAND
+async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    chat_id = update.effective_chat.id
+
+    await update.message.reply_text(
+        f"Group ID:\n{chat_id}"
     )
 
 
@@ -139,12 +146,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 telegram_app.add_handler(CommandHandler("start", start))
-
-telegram_app.add_handler(
-    CallbackQueryHandler(button_handler)
-)
-
 telegram_app.add_handler(CommandHandler("groupid", groupid))
+telegram_app.add_handler(CallbackQueryHandler(button_handler))
+
 
 @app.on_event("startup")
 async def startup():
