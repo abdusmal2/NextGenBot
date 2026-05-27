@@ -111,15 +111,30 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     # SEND LINK TO USER
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=(
-            "✅ Payment Approved!\n\n"
-            "Here is your VIP access link:\n\n"
-            f"{invite.invite_link}\n\n"
-            "⚠️ This link can only be used once."
+    admin_keyboard = [
+    [
+        InlineKeyboardButton(
+            "✅ Approve",
+            callback_data=f"approve_{user.id}"
+        ),
+        InlineKeyboardButton(
+            "❌ Decline",
+            callback_data=f"decline_{user.id}"
         )
-    )
+    ]
+]
+
+admin_markup = InlineKeyboardMarkup(admin_keyboard)
+
+await context.bot.send_message(
+    chat_id=ADMIN_ID,
+    text=(
+        "🚨 New Manual Payment Request\n\n"
+        f"Username: @{user.username}\n"
+        f"User ID: {user.id}"
+    ),
+    reply_markup=admin_markup
+)
 
     # CONFIRM TO ADMIN
     await update.message.reply_text(
@@ -128,10 +143,51 @@ async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # BUTTON HANDLER
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+elif query.data == "confirm_manual_payment":
 
     query = update.callback_query
 
     await query.answer()
+    # APPROVE USER
+    elif query.data.startswith("approve_"):
+
+        user_id = int(query.data.split("_")[1])
+
+        invite = await context.bot.create_chat_invite_link(
+            chat_id=VIP_GROUP_ID,
+            member_limit=1
+        )
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "✅ Payment Approved!\n\n"
+                "Here is your VIP access link:\n\n"
+                f"{invite.invite_link}\n\n"
+                "⚠️ Link usable only once."
+            )
+        )
+
+        await query.message.edit_text(
+            "✅ User approved successfully."
+        )
+
+    # DECLINE USER
+    elif query.data.startswith("decline_"):
+
+        user_id = int(query.data.split("_")[1])
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "❌ Payment not received.\n"
+"Please complete payment and try again or contact admin."
+            )
+        )
+
+        await query.message.edit_text(
+            "❌ Payment declined."
+        )
 
     # MANUAL PAYMENT
     if query.data == "manual_payment":
