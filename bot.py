@@ -168,10 +168,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user_id = int(query.data.split("_")[1])
 
         invite = await context.bot.create_chat_invite_link(
-            chat_id=VIP_GROUP_ID,
-            member_limit=1,
-            expire_date=datetime.now() + timedelta(hours=1)
-        )
+    chat_id=VIP_GROUP_ID,
+    member_limit=1
+)
 
         await context.bot.send_message(
             chat_id=user_id,
