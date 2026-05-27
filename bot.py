@@ -37,6 +37,59 @@ telegram_app = Application.builder().token(BOT_TOKEN).build()
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    await query.answer()
+
+    # MANUAL PAYMENT
+    if query.data == "manual_payment":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "✅ I Have Paid",
+                    callback_data="confirm_manual_payment"
+                )
+            ]
+        ]
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        await query.message.reply_text(
+            "💳 Manual Payment\n\n"
+            "Bank: Opay\n"
+            "Account Name: YOUR NAME\n"
+            "Account Number: 1234567890\n\n"
+            "After payment click the button below.",
+            reply_markup=reply_markup
+        )
+
+    # ONLINE PAYMENT
+    elif query.data == "online_payment":
+
+        await query.message.reply_text(
+            "🌐 Online payment system coming soon."
+        )
+
+    # CONFIRM PAYMENT
+    elif query.data == "confirm_manual_payment":
+
+        user = query.from_user
+
+        await context.bot.send_message(
+            chat_id=ADMIN_ID,
+            text=(
+                "🚨 New Manual Payment Request\n\n"
+                f"Username: @{user.username}\n"
+                f"User ID: {user.id}"
+            )
+        )
+
+        await query.message.reply_text(
+            "✅ Payment request sent to admin.\n"
+            "Please wait for confirmation."
+        )
     user = update.effective_user
 
     # SAVE USER
@@ -86,7 +139,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 telegram_app.add_handler(CommandHandler("start", start))
-
+telegram_app.add_handler(CallbackQueryHandler(button_handler))
 
 @app.on_event("startup")
 async def startup():
