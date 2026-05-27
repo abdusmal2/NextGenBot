@@ -1,11 +1,12 @@
 import os
-from flask import Flask, request
+from fastapi import FastAPI, Request
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
+import uvicorn
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-app = Flask(__name__)
+app = FastAPI()
 
 telegram_app = Application.builder().token(BOT_TOKEN).build()
 
@@ -17,33 +18,27 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 telegram_app.add_handler(CommandHandler("start", start))
 
 
-@app.before_request
-def initialize():
-    import asyncio
-    try:
-        asyncio.get_event_loop().run_until_complete(telegram_app.initialize())
-    except:
-        pass
+@app.on_event("startup")
+async def startup():
+    await telegram_app.initialize()
 
 
-@app.route("/", methods=["POST"])
-def webhook():
-    import asyncio
+@app.post("/")
+async def webhook(request: Request):
+    data = await request.json()
 
-    update = Update.de_json(request.get_json(force=True), telegram_app.bot)
+    update = Update.de_json(data, telegram_app.bot)
 
-    asyncio.get_event_loop().run_until_complete(
-        telegram_app.process_update(update)
-    )
+    await telegram_app.process_update(update)
 
-    return "ok"
+    return {"ok": True}
 
 
-@app.route("/", methods=["GET"])
-def home():
-    return "Bot running"
+@app.get("/")
+async def home():
+    return {"status": "running"}
 
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port)
