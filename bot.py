@@ -87,107 +87,14 @@ async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"Group ID:\n{chat_id}"
     )
-async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    # ADMIN ONLY
-    if update.effective_user.id != ADMIN_ID:
-        return
-
-    # CHECK USER ID
-    if len(context.args) == 0:
-
-        await update.message.reply_text(
-            "Usage:\n/approve USER_ID"
-        )
-
-        return
-
-    user_id = int(context.args[0])
-
-    # CREATE ONE-TIME INVITE LINK
-    invite = await context.bot.create_chat_invite_link(
-        chat_id=VIP_GROUP_ID,
-        member_limit=1
-    )
-
-    # SEND LINK TO USER
-    admin_keyboard = [
-    [
-        InlineKeyboardButton(
-            "✅ Approve",
-            callback_data=f"approve_{user.id}"
-        ),
-        InlineKeyboardButton(
-            "❌ Decline",
-            callback_data=f"decline_{user.id}"
-        )
-    ]
-]
-
-admin_markup = InlineKeyboardMarkup(admin_keyboard)
-
-await context.bot.send_message(
-    chat_id=ADMIN_ID,
-    text=(
-        "🚨 New Manual Payment Request\n\n"
-        f"Username: @{user.username}\n"
-        f"User ID: {user.id}"
-    ),
-    reply_markup=admin_markup
-)
-
-    # CONFIRM TO ADMIN
-    await update.message.reply_text(
-        "✅ User approved successfully."
-    )
 
 # BUTTON HANDLER
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-elif query.data == "confirm_manual_payment":
 
     query = update.callback_query
 
     await query.answer()
-    # APPROVE USER
-    elif query.data.startswith("approve_"):
-
-        user_id = int(query.data.split("_")[1])
-
-        invite = await context.bot.create_chat_invite_link(
-            chat_id=VIP_GROUP_ID,
-            member_limit=1
-        )
-
-        await context.bot.send_message(
-            chat_id=user_id,
-            text=(
-                "✅ Payment Approved!\n\n"
-                "Here is your VIP access link:\n\n"
-                f"{invite.invite_link}\n\n"
-                "⚠️ Link usable only once."
-            )
-        )
-
-        await query.message.edit_text(
-            "✅ User approved successfully."
-        )
-
-    # DECLINE USER
-    elif query.data.startswith("decline_"):
-
-        user_id = int(query.data.split("_")[1])
-
-        await context.bot.send_message(
-            chat_id=user_id,
-            text=(
-                "❌ Payment not received.\n"
-"Please complete payment and try again or contact admin."
-            )
-        )
-
-        await query.message.edit_text(
-            "❌ Payment declined."
-        )
 
     # MANUAL PAYMENT
     if query.data == "manual_payment":
@@ -224,13 +131,29 @@ elif query.data == "confirm_manual_payment":
 
         user = query.from_user
 
+        admin_keyboard = [
+            [
+                InlineKeyboardButton(
+                    "✅ Approve",
+                    callback_data=f"approve_{user.id}"
+                ),
+                InlineKeyboardButton(
+                    "❌ Decline",
+                    callback_data=f"decline_{user.id}"
+                )
+            ]
+        ]
+
+        admin_markup = InlineKeyboardMarkup(admin_keyboard)
+
         await context.bot.send_message(
             chat_id=ADMIN_ID,
             text=(
                 "🚨 New Manual Payment Request\n\n"
                 f"Username: @{user.username}\n"
                 f"User ID: {user.id}"
-            )
+            ),
+            reply_markup=admin_markup
         )
 
         await query.message.reply_text(
@@ -238,11 +161,51 @@ elif query.data == "confirm_manual_payment":
             "Please wait for confirmation."
         )
 
+    # APPROVE USER
+    elif query.data.startswith("approve_"):
+
+        user_id = int(query.data.split("_")[1])
+
+        invite = await context.bot.create_chat_invite_link(
+            chat_id=VIP_GROUP_ID,
+            member_limit=1
+        )
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "✅ Payment Approved!\n\n"
+                "Here is your VIP access link:\n\n"
+                f"{invite.invite_link}\n\n"
+                "⚠️ Link usable only once."
+            )
+        )
+
+        await query.message.edit_text(
+            "✅ User approved successfully."
+        )
+
+    # DECLINE USER
+    elif query.data.startswith("decline_"):
+
+        user_id = int(query.data.split("_")[1])
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "❌ Payment not received.\n"
+                "Please complete payment and try again or contact admin."
+            )
+        )
+
+        await query.message.edit_text(
+            "❌ Payment declined."
+        )
+
 
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("groupid", groupid))
 telegram_app.add_handler(CallbackQueryHandler(button_handler))
-telegram_app.add_handler(CommandHandler("approve", approve))
 
 
 @app.on_event("startup")
