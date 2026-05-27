@@ -2,7 +2,12 @@ import os
 import sqlite3
 from fastapi import FastAPI, Request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    CallbackQueryHandler
+)
 import uvicorn
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
