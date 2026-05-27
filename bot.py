@@ -17,6 +17,7 @@ import uvicorn
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 ADMIN_ID = 7283280924
+VIP_GROUP_ID = -1003910567293
 
 # DATABASE
 conn = sqlite3.connect("users.db", check_same_thread=False)
@@ -86,7 +87,44 @@ async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"Group ID:\n{chat_id}"
     )
+async def approve(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    # ADMIN ONLY
+    if update.effective_user.id != ADMIN_ID:
+        return
+
+    # CHECK USER ID
+    if len(context.args) == 0:
+
+        await update.message.reply_text(
+            "Usage:\n/approve USER_ID"
+        )
+
+        return
+
+    user_id = int(context.args[0])
+
+    # CREATE ONE-TIME INVITE LINK
+    invite = await context.bot.create_chat_invite_link(
+        chat_id=VIP_GROUP_ID,
+        member_limit=1
+    )
+
+    # SEND LINK TO USER
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=(
+            "✅ Payment Approved!\n\n"
+            "Here is your VIP access link:\n\n"
+            f"{invite.invite_link}\n\n"
+            "⚠️ This link can only be used once."
+        )
+    )
+
+    # CONFIRM TO ADMIN
+    await update.message.reply_text(
+        "✅ User approved successfully."
+    )
 
 # BUTTON HANDLER
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
