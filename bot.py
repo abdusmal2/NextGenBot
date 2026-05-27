@@ -11,6 +11,7 @@ from telegram.ext import (
 import uvicorn
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_ID = 7283280924
 
 # DATABASE
 conn = sqlite3.connect("users.db", check_same_thread=False)
