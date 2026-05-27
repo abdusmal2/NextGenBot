@@ -1,7 +1,11 @@
 import os
 import sqlite3
 from fastapi import FastAPI, Request
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -11,6 +15,7 @@ from telegram.ext import (
 import uvicorn
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+
 ADMIN_ID = 7283280924
 
 # DATABASE
@@ -34,10 +39,44 @@ app = FastAPI()
 telegram_app = Application.builder().token(BOT_TOKEN).build()
 
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-
+# START COMMAND
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    user = update.effective_user
+
+    cursor.execute(
+        "INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)",
+        (user.id, user.username)
+    )
+
+    conn.commit()
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "💳 Manual Payment",
+                callback_data="manual_payment"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🌐 Online Payment",
+                callback_data="online_payment"
+            )
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        "💎 You are to pay ₦500 to get access 💎",
+        reply_markup=reply_markup
+    )
+
+
+# BUTTON HANDLER
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     query = update.callback_query
 
     await query.answer()
@@ -90,56 +129,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "✅ Payment request sent to admin.\n"
             "Please wait for confirmation."
         )
-    user = update.effective_user
-
-    # SAVE USER
-    cursor.execute(
-        "INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)",
-        (user.id, user.username)
-    )
-
-    conn.commit()
-
-    # BUTTONS
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "💳 Manual Payment",
-                callback_data="manual_payment"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🌐 Online Payment",
-                callback_data="online_payment"
-            )
-        ]
-    ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    await update.message.reply_text(
-        "💎 You are to pay ₦500 to get access 💎",
-        reply_markup=reply_markup
-    )
-
-    # SAVE USER
-    cursor.execute(
-        "INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)",
-        (user.id, user.username)
-    )
-
-    conn.commit()
-
-    await update.message.reply_text(
-        "Welcome!\n\n"
-        "Your account has been registered.\n"
-        "Please make payment to access the VIP group."
-    )
 
 
 telegram_app.add_handler(CommandHandler("start", start))
-telegram_app.add_handler(CallbackQueryHandler(button_handler))
+
+telegram_app.add_handler(
+    CallbackQueryHandler(button_handler)
+)
+
 
 @app.on_event("startup")
 async def startup():
@@ -148,6 +145,7 @@ async def startup():
 
 @app.post("/")
 async def webhook(request: Request):
+
     data = await request.json()
 
     update = Update.de_json(data, telegram_app.bot)
@@ -163,5 +161,7 @@ async def home():
 
 
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT", 10000))
+
     uvicorn.run(app, host="0.0.0.0", port=port)
