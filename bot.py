@@ -1,44 +1,53 @@
 import os
-from fastapi import FastAPI, Request
-from telegram import Update
+import sqlite3
 from telegram.ext import Application, CommandHandler, ContextTypes
-import uvicorn
+from telegram import Update
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+RENDER_URL = os.getenv("RENDER_URL")
 
-app = FastAPI()
+# DATABASE SETUP
+conn = sqlite3.connect("users.db", check_same_thread=False)
+cursor = conn.cursor()
 
-telegram_app = Application.builder().token(BOT_TOKEN).build()
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY,
+    username TEXT,
+    join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    paid INTEGER DEFAULT 0
+)
+""")
 
+conn.commit()
 
+# BOT
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Muna kan aikine, aɗan jira!")
+    user = update.effective_user
 
+    # SAVE USER
+    cursor.execute(
+        "INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)",
+        (user.id, user.username)
+    )
+    conn.commit()
 
-telegram_app.add_handler(CommandHandler("start", start))
+    await update.message.reply_text(
+        "Welcome!\n\n"
+        "Your account has been registered.\n"
+        "Please make payment to access the VIP group."
+    )
 
+app = Application.builder().token(BOT_TOKEN).build()
 
-@app.on_event("startup")
-async def startup():
-    await telegram_app.initialize()
-
-
-@app.post("/")
-async def webhook(request: Request):
-    data = await request.json()
-
-    update = Update.de_json(data, telegram_app.bot)
-
-    await telegram_app.process_update(update)
-
-    return {"ok": True}
-
-
-@app.get("/")
-async def home():
-    return {"status": "running"}
-
+app.add_handler(CommandHandler("start", start))
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=port,
+        webhook_url=RENDER_URL,
+        url_path="webhook",
+    )
