@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from datetime import datetime, timedelta
 from fastapi import FastAPI, Request
 from telegram import (
     Update,
@@ -168,7 +169,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         invite = await context.bot.create_chat_invite_link(
             chat_id=VIP_GROUP_ID,
-            member_limit=1
+            member_limit=1,
+            expire_date=datetime.now() + timedelta(hours=1)
         )
 
         await context.bot.send_message(
@@ -177,7 +179,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "✅ Payment Approved!\n\n"
                 "Here is your VIP access link:\n\n"
                 f"{invite.invite_link}\n\n"
-                "⚠️ Link usable only once."
+                "⚠️ Link usable only once and expires in 1 hour."
             )
         )
 
