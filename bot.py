@@ -1,5 +1,4 @@
 import os
-import asyncio
 from flask import Flask, request
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -10,31 +9,37 @@ app = Flask(__name__)
 
 telegram_app = Application.builder().token(BOT_TOKEN).build()
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Muna kan aikine!")
+    await update.message.reply_text("Bot is working!")
+
 
 telegram_app.add_handler(CommandHandler("start", start))
 
 
-async def setup():
-    await telegram_app.initialize()
+@app.before_request
+def initialize():
+    import asyncio
+    try:
+        asyncio.get_event_loop().run_until_complete(telegram_app.initialize())
+    except:
+        pass
 
-asyncio.run(setup())
 
-
-@app.post("/")
+@app.route("/", methods=["POST"])
 def webhook():
+    import asyncio
+
     update = Update.de_json(request.get_json(force=True), telegram_app.bot)
 
-    async def process():
-        await telegram_app.process_update(update)
-
-    asyncio.run(process())
+    asyncio.get_event_loop().run_until_complete(
+        telegram_app.process_update(update)
+    )
 
     return "ok"
 
 
-@app.get("/")
+@app.route("/", methods=["GET"])
 def home():
     return "Bot running"
 
