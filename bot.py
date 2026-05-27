@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from fastapi import FastAPI, Request
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 import uvicorn
 
@@ -28,8 +28,41 @@ app = FastAPI()
 telegram_app = Application.builder().token(BOT_TOKEN).build()
 
 
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
+
+    # SAVE USER
+    cursor.execute(
+        "INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)",
+        (user.id, user.username)
+    )
+
+    conn.commit()
+
+    # BUTTONS
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "💳 Manual Payment",
+                callback_data="manual_payment"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "🌐 Online Payment",
+                callback_data="online_payment"
+            )
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        "💎 You are to pay ₦500 to get access 💎",
+        reply_markup=reply_markup
+    )
 
     # SAVE USER
     cursor.execute(
