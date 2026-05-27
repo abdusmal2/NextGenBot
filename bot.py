@@ -12,7 +12,7 @@ telegram_app = Application.builder().token(BOT_TOKEN).build()
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Bot is working!")
+    await update.message.reply_text("Muna kan aikine, aɗan jira!")
 
 
 telegram_app.add_handler(CommandHandler("start", start))
