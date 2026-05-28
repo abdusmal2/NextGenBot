@@ -172,26 +172,26 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Please wait for confirmation."
         )
 
-    # APPROVE USER
+        # APPROVE USER
     elif query.data.startswith("approve_"):
 
         user_id = int(query.data.split("_")[1])
 
         invite = await context.bot.create_chat_invite_link(
-    chat_id=VIP_GROUP_ID,
-    member_limit=1
-)
+            chat_id=VIP_GROUP_ID,
+            member_limit=1
+        )
 
-cursor.execute(
-    "INSERT INTO invites VALUES (?, ?, ?)",
-    (
-        user_id,
-        invite.invite_link,
-        invite.invite_link
-    )
-)
+        cursor.execute(
+            "INSERT INTO invites VALUES (?, ?, ?)",
+            (
+                user_id,
+                invite.invite_link,
+                invite.invite_link
+            )
+        )
 
-conn.commit()
+        conn.commit()
 
         await context.bot.send_message(
             chat_id=user_id,
@@ -199,8 +199,9 @@ conn.commit()
                 "✅ Payment Approved!\n\n"
                 "Here is your VIP access link:\n\n"
                 f"{invite.invite_link}\n\n"
-                "⚠️ Link usable only once and expires in 1 hour."
-            )
+                "⚠️ Link usable only once."
+            ),
+            protect_content=True
         )
 
         await query.message.edit_text(
