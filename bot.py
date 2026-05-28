@@ -192,16 +192,25 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         conn.commit()
 
-        await context.bot.send_message(
-            chat_id=user_id,
-            text=(
-                "✅ Payment Approved!\n\n"
-                "Here is your VIP access link:\n\n"
-                f"{invite.invite_link}\n\n"
-                "⚠️ Link usable only once."
-            ),
-            protect_content=True
+        join_keyboard = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton(
+            "🚀 JOIN VIP",
+            url=invite.invite_link
         )
+    ]
+])
+
+await context.bot.send_message(
+    chat_id=user_id,
+    text=(
+        "✅ Payment Approved!\n\n"
+        "Tap the button below to join VIP.\n\n"
+        "⚠️ Link usable only once."
+    ),
+    reply_markup=join_keyboard,
+    protect_content=True
+)
 
         await query.message.edit_text(
             "✅ User approved successfully."
