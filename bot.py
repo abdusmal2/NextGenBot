@@ -270,6 +270,12 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("groupid", groupid))
 telegram_app.add_handler(CallbackQueryHandler(button_handler))
+telegram_app.add_handler(
+    MessageHandler(
+        filters.StatusUpdate.NEW_CHAT_MEMBERS,
+        new_member
+    )
+)
 
 
 @app.on_event("startup")
