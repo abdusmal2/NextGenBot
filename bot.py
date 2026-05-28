@@ -171,7 +171,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Please wait for confirmation."
         )
 
-        # APPROVE USER
+            # APPROVE USER
     elif query.data.startswith("approve_"):
 
         user_id = int(query.data.split("_")[1])
@@ -186,7 +186,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             (
                 user_id,
                 invite.invite_link,
-                invite.invite_link
+                0
             )
         )
 
@@ -201,7 +201,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ])
 
-        await context.bot.send_message(
+        invite_message = await context.bot.send_message(
             chat_id=user_id,
             text=(
                 "✅ Payment Approved!\n\n"
@@ -211,6 +211,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=join_keyboard,
             protect_content=True
         )
+
+        # SAVE MESSAGE ID
+        cursor.execute(
+            "UPDATE invites SET invite_link_id=? WHERE user_id=?",
+            (invite_message.message_id, user_id)
+        )
+
+        conn.commit()
 
         await query.message.edit_text(
             "✅ User approved successfully."
@@ -243,7 +251,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # FIND USER INVITE
         cursor.execute(
-            "SELECT invite_link FROM invites WHERE user_id=?",
+            "SELECT invite_link, invite_link_id FROM invites WHERE user_id=?",
             (user_id,)
         )
 
@@ -252,12 +260,22 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if result:
 
             invite_link = result[0]
+            message_id = result[1]
 
             # REVOKE INVITE LINK
             await context.bot.revoke_chat_invite_link(
                 chat_id=VIP_GROUP_ID,
                 invite_link=invite_link
             )
+
+            # DELETE INVITE MESSAGE
+            try:
+                await context.bot.delete_message(
+                    chat_id=user_id,
+                    message_id=message_id
+                )
+            except:
+                pass
 
             # DELETE SAVED INVITE
             cursor.execute(
@@ -267,10 +285,14 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             conn.commit()
 
-            # OPTIONAL WELCOME MESSAGE
+            # WELCOME MESSAGE IN VIP GROUP
             await context.bot.send_message(
-                chat_id=user_id,
-                text="✅ Welcome to VIP."
+                chat_id=VIP_GROUP_ID,
+                text=(
+                    f"🎉 Welcome to VIP "
+                    f"{member.mention_html()} 🔥"
+                ),
+                parse_mode="HTML"
             )
 
 
