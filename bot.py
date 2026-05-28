@@ -285,28 +285,28 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             conn.commit()
 
-            # WELCOME MESSAGE IN VIP GROUP
-welcome_message = await context.bot.send_message(
-    chat_id=VIP_GROUP_ID,
-    text=(
-        f"🎉 Welcome to VIP "
-        f"{member.mention_html()} 🔥"
-    ),
-    parse_mode="HTML"
-)
+                        # WELCOME MESSAGE IN VIP GROUP
+            import asyncio
 
-# AUTO DELETE WELCOME MESSAGE AFTER 5 MINUTES
-import asyncio
+            welcome_message = await context.bot.send_message(
+                chat_id=VIP_GROUP_ID,
+                text=(
+                    f"🎉 Welcome to VIP "
+                    f"{member.mention_html()} 🔥"
+                ),
+                parse_mode="HTML"
+            )
 
-await asyncio.sleep(300)
+            # AUTO DELETE AFTER 5 MINUTES
+            await asyncio.sleep(300)
 
-try:
-    await context.bot.delete_message(
-        chat_id=VIP_GROUP_ID,
-        message_id=welcome_message.message_id
-    )
-except:
-    pass
+            try:
+                await context.bot.delete_message(
+                    chat_id=VIP_GROUP_ID,
+                    message_id=welcome_message.message_id
+                )
+            except:
+                pass
 
 
 telegram_app.add_handler(CommandHandler("start", start))
