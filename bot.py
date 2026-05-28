@@ -1,6 +1,5 @@
 import os
 import sqlite3
-from datetime import datetime, timedelta
 from fastapi import FastAPI, Request
 from telegram import (
     Update,
@@ -12,8 +11,8 @@ from telegram.ext import (
     CommandHandler,
     ContextTypes,
     CallbackQueryHandler,
-MessageHandler,
-filters
+    MessageHandler,
+    filters
 )
 import uvicorn
 
@@ -34,8 +33,6 @@ CREATE TABLE IF NOT EXISTS users (
     paid INTEGER DEFAULT 0
 )
 """)
-
-conn.commit()
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS invites (
@@ -225,8 +222,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await query.message.edit_text(
             "❌ Payment declined."
-        )reply_markup=reply_markup
         )
+
 
 # JOIN DETECTION
 async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -266,6 +263,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 chat_id=user_id,
                 text="✅ Welcome to VIP."
             )
+
 
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("groupid", groupid))
