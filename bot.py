@@ -35,6 +35,16 @@ CREATE TABLE IF NOT EXISTS users (
 
 conn.commit()
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS invites (
+    user_id INTEGER,
+    invite_link TEXT,
+    invite_link_id TEXT
+)
+""")
+
+conn.commit()
+
 # FASTAPI
 app = FastAPI()
 
@@ -171,6 +181,17 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id=VIP_GROUP_ID,
     member_limit=1
 )
+
+cursor.execute(
+    "INSERT INTO invites VALUES (?, ?, ?)",
+    (
+        user_id,
+        invite.invite_link,
+        invite.invite_link
+    )
+)
+
+conn.commit()
 
         await context.bot.send_message(
             chat_id=user_id,
