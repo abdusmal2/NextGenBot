@@ -11,7 +11,9 @@ from telegram.ext import (
     Application,
     CommandHandler,
     ContextTypes,
-    CallbackQueryHandler
+    CallbackQueryHandler,
+MessageHandler,
+filters
 )
 import uvicorn
 
@@ -129,6 +131,45 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "After payment click the button below.",
             reply_markup=reply_markup
         )
+
+# JOIN DETECTION
+async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    for member in update.message.new_chat_members:
+
+        user_id = member.id
+
+        # FIND USER INVITE
+        cursor.execute(
+            "SELECT invite_link FROM invites WHERE user_id=?",
+            (user_id,)
+        )
+
+        result = cursor.fetchone()
+
+        if result:
+
+            invite_link = result[0]
+
+            # REVOKE INVITE LINK
+            await context.bot.revoke_chat_invite_link(
+                chat_id=VIP_GROUP_ID,
+                invite_link=invite_link
+            )
+
+            # DELETE SAVED INVITE
+            cursor.execute(
+                "DELETE FROM invites WHERE user_id=?",
+                (user_id,)
+            )
+
+            conn.commit()
+
+            # OPTIONAL WELCOME MESSAGE
+            await context.bot.send_message(
+                chat_id=user_id,
+                text="✅ Welcome to VIP."
+            )
 
     # ONLINE PAYMENT
     elif query.data == "online_payment":
