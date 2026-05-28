@@ -171,7 +171,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Please wait for confirmation."
         )
 
-    # APPROVE USER
+        # APPROVE USER
     elif query.data.startswith("approve_"):
 
         user_id = int(query.data.split("_")[1])
@@ -193,24 +193,24 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         conn.commit()
 
         join_keyboard = InlineKeyboardMarkup([
-    [
-        InlineKeyboardButton(
-            "🚀 JOIN VIP",
-            url=invite.invite_link
-        )
-    ]
-])
+            [
+                InlineKeyboardButton(
+                    "🚀 JOIN VIP",
+                    url=invite.invite_link
+                )
+            ]
+        ])
 
-await context.bot.send_message(
-    chat_id=user_id,
-    text=(
-        "✅ Payment Approved!\n\n"
-        "Tap the button below to join VIP.\n\n"
-        "⚠️ Link usable only once."
-    ),
-    reply_markup=join_keyboard,
-    protect_content=True
-)
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "✅ Payment Approved!\n\n"
+                "Tap the button below to join VIP.\n\n"
+                "⚠️ Link usable only once."
+            ),
+            reply_markup=join_keyboard,
+            protect_content=True
+        )
 
         await query.message.edit_text(
             "✅ User approved successfully."
