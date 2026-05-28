@@ -132,6 +132,102 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=reply_markup
         )
 
+    # ONLINE PAYMENT
+    elif query.data == "online_payment":
+
+        await query.message.reply_text(
+            "🌐 Online payment system coming soon."
+        )
+
+    # CONFIRM PAYMENT
+    elif query.data == "confirm_manual_payment":
+
+        user = query.from_user
+
+        admin_keyboard = [
+            [
+                InlineKeyboardButton(
+                    "✅ Approve",
+                    callback_data=f"approve_{user.id}"
+                ),
+                InlineKeyboardButton(
+                    "❌ Decline",
+                    callback_data=f"decline_{user.id}"
+                )
+            ]
+        ]
+
+        admin_markup = InlineKeyboardMarkup(admin_keyboard)
+
+        await context.bot.send_message(
+            chat_id=ADMIN_ID,
+            text=(
+                "🚨 New Manual Payment Request\n\n"
+                f"Username: @{user.username}\n"
+                f"User ID: {user.id}"
+            ),
+            reply_markup=admin_markup
+        )
+
+        await query.message.reply_text(
+            "✅ Payment request sent to admin.\n"
+            "Please wait for confirmation."
+        )
+
+    # APPROVE USER
+    elif query.data.startswith("approve_"):
+
+        user_id = int(query.data.split("_")[1])
+
+        invite = await context.bot.create_chat_invite_link(
+            chat_id=VIP_GROUP_ID,
+            member_limit=1
+        )
+
+        cursor.execute(
+            "INSERT INTO invites VALUES (?, ?, ?)",
+            (
+                user_id,
+                invite.invite_link,
+                invite.invite_link
+            )
+        )
+
+        conn.commit()
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "✅ Payment Approved!\n\n"
+                "Here is your VIP access link:\n\n"
+                f"{invite.invite_link}\n\n"
+                "⚠️ Link usable only once."
+            ),
+            protect_content=True
+        )
+
+        await query.message.edit_text(
+            "✅ User approved successfully."
+        )
+
+    # DECLINE USER
+    elif query.data.startswith("decline_"):
+
+        user_id = int(query.data.split("_")[1])
+
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "❌ Payment not received.\n"
+                "Please complete payment and try again or contact admin."
+            )
+        )
+
+        await query.message.edit_text(
+            "❌ Payment declined."
+        )reply_markup=reply_markup
+        )
+
 # JOIN DETECTION
 async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
