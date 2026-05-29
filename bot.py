@@ -30,7 +30,10 @@ CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
     username TEXT,
     join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    paid INTEGER DEFAULT 0
+    paid INTEGER DEFAULT 0,
+    plan_months INTEGER DEFAULT 0,
+    amount INTEGER DEFAULT 0,
+    expiry_date TEXT
 )
 """)
 
@@ -69,14 +72,20 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [
             InlineKeyboardButton(
-                "💳 Manual Payment",
-                callback_data="manual_payment"
+                "📅 1 Month",
+                callback_data="plan_1"
             )
         ],
         [
             InlineKeyboardButton(
-                "🌐 Online Payment",
-                callback_data="online_payment"
+                "📅 2 Months",
+                callback_data="plan_2"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📝 Custom Plan",
+                callback_data="custom_plan"
             )
         ]
     ]
@@ -84,7 +93,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "💎 You are to pay ₦500 to get access 💎",
+        f"👋 Welcome To NextGen Dub Studio Bot, {user.first_name}!\n\n"
+        "🎬 This bot provides access to our VIP community where you can enjoy exclusive dubbed movies, series, and premium content.\n\n"
+        "⚠️ If you join the VIP group late and discover that you missed some movies or episodes, please contact our administrators for assistance:\n\n"
+        "👤 @Abdusmal\n"
+        "👤 @D16graphics\n\n"
+        "They will help you with any questions or missing content.\n\n"
+        "💎 To enter the VIP group, please select a subscription plan below.",
         reply_markup=reply_markup
     )
 
@@ -106,8 +121,84 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
+    # 1 MONTH PLAN
+    if query.data == "plan_1":
+
+        cursor.execute(
+            "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
+            (1, 500, query.from_user.id)
+        )
+
+        conn.commit()
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "💳 Manual Payment",
+                    callback_data="manual_payment"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🌐 Online Payment",
+                    callback_data="online_payment"
+                )
+            ]
+        ]
+
+        await query.message.reply_text(
+            "💎 1 Month VIP Plan\n\n"
+            "You are to pay ₦500 to get access.\n\n"
+            "Choose a payment method below.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    # 2 MONTH PLAN
+    elif query.data == "plan_2":
+
+        cursor.execute(
+            "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
+            (2, 1000, query.from_user.id)
+        )
+
+        conn.commit()
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "💳 Manual Payment",
+                    callback_data="manual_payment"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🌐 Online Payment",
+                    callback_data="online_payment"
+                )
+            ]
+        ]
+
+        await query.message.reply_text(
+            "💎 2 Months VIP Plan\n\n"
+            "You are to pay ₦1000 to get access.\n\n"
+            "Choose a payment method below.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    # CUSTOM PLAN
+    elif query.data == "custom_plan":
+
+        await query.message.reply_text(
+            "📝 Custom VIP Plan\n\n"
+            "Send the number of months you want.\n\n"
+            "Examples:\n"
+            "3\n"
+            "6\n"
+            "12"
+        )
+
     # MANUAL PAYMENT
-    if query.data == "manual_payment":
+    elif query.data == "manual_payment":
 
         keyboard = [
             [
@@ -118,15 +209,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ]
 
-        reply_markup = InlineKeyboardMarkup(keyboard)
-
         await query.message.reply_text(
             "💳 Manual Payment\n\n"
             "Bank: Opay\n"
             "Account Name: YOUR NAME\n"
             "Account Number: 1234567890\n\n"
             "After payment click the button below.",
-            reply_markup=reply_markup
+            reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
     # ONLINE PAYMENT
@@ -141,6 +230,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user = query.from_user
 
+        cursor.execute(
+            "SELECT plan_months, amount FROM users WHERE user_id=?",
+            (user.id,)
+        )
+
+        result = cursor.fetchone()
+
+        months = result[0]
+        amount = result[1]
+
         admin_keyboard = [
             [
                 InlineKeyboardButton(
@@ -154,16 +253,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ]
 
-        admin_markup = InlineKeyboardMarkup(admin_keyboard)
-
         await context.bot.send_message(
             chat_id=ADMIN_ID,
             text=(
                 "🚨 New Manual Payment Request\n\n"
                 f"Username: @{user.username}\n"
-                f"User ID: {user.id}"
+                f"User ID: {user.id}\n\n"
+                f"Plan: {months} Month(s)\n"
+                f"Amount: ₦{amount}"
             ),
-            reply_markup=admin_markup
+            reply_markup=InlineKeyboardMarkup(admin_keyboard)
         )
 
         await query.message.reply_text(
