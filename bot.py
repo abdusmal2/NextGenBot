@@ -199,8 +199,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # CUSTOM PLAN
     elif query.data == "custom_plan":
 
+        cursor.execute(
+            "UPDATE users SET waiting_custom_plan=1 WHERE user_id=?",
+            (query.from_user.id,)
+        )
+
+        conn.commit()
+
         await query.message.reply_text(
-            "TEST CUSTOM PLAN WORKS"
+            "📝 Custom VIP Plan\n\n"
+            "Send the number of months you want.\n\n"
+            "Examples:\n"
+            "3\n"
+            "6\n"
+            "12"
         )
 
         # MANUAL PAYMENT
