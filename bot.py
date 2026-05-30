@@ -225,7 +225,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🌐 Online payment system coming soon."
         )
 
-    # CONFIRM PAYMENT
+        # CONFIRM PAYMENT
     elif query.data == "confirm_manual_payment":
 
         user = query.from_user
@@ -237,16 +237,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         result = cursor.fetchone()
 
-if not result:
+        if not result:
+            await query.message.reply_text(
+                "❌ No plan selected."
+            )
+            return
 
-    await query.message.reply_text(
-        "❌ No plan selected.\nPlease select a VIP plan first."
-    )
-
-    return
-
-months = result[0]
-amount = result[1]
+        months = result[0]
+        amount = result[1]
 
         admin_keyboard = [
             [
@@ -273,7 +271,7 @@ amount = result[1]
             reply_markup=InlineKeyboardMarkup(admin_keyboard)
         )
 
-                await query.message.reply_text(
+        await query.message.reply_text(
             "✅ Payment request sent to admin.\n"
             "Please wait for confirmation."
         )
