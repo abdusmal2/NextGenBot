@@ -259,17 +259,25 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ]
 
-        await context.bot.send_message(
-            chat_id=ADMIN_ID,
-            text=(
-                "🚨 New Manual Payment Request\n\n"
-                f"Username: @{user.username}\n"
-                f"User ID: {user.id}\n\n"
-                f"Plan: {months} Month(s)\n"
-                f"Amount: ₦{amount}"
-            ),
-            reply_markup=InlineKeyboardMarkup(admin_keyboard)
-        )
+        cursor.execute(
+    "SELECT receipt_file_id FROM users WHERE user_id=?",
+    (user.id,)
+)
+
+receipt = cursor.fetchone()
+
+await context.bot.send_photo(
+    chat_id=ADMIN_ID,
+    photo=receipt[0],
+    caption=(
+        "🚨 New Manual Payment Request\n\n"
+        f"Username: @{user.username}\n"
+        f"User ID: {user.id}\n\n"
+        f"Plan: {months} Month(s)\n"
+        f"Amount: ₦{amount}"
+    ),
+    reply_markup=InlineKeyboardMarkup(admin_keyboard)
+)
 
         await query.message.reply_text(
             "✅ Payment request sent to admin.\n"
