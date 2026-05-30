@@ -425,28 +425,25 @@ async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Click the button below to notify admin.",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
-
 # CUSTOM PLAN HANDLER
 async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    user = update.effective_user
-
     if not update.message:
-    return
+        return
 
-if not update.message.text:
-    return
+    if not update.message.text:
+        return
 
-if not update.message.text.isdigit():
-    return
-
-months = int(update.message.text)
-
-await update.message.reply_text(
-    f"TEST: You entered {months} month(s)"
-)
+    if not update.message.text.isdigit():
+        return
 
     months = int(update.message.text)
+
+    await update.message.reply_text(
+        f"TEST: You entered {months} month(s)"
+    )
+
+    user = update.effective_user
 
     cursor.execute(
         "SELECT waiting_custom_plan FROM users WHERE user_id=?",
