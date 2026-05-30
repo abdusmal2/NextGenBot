@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
     amount INTEGER DEFAULT 0,
     expiry_date TEXT,
     receipt_file_id TEXT
+    waiting_custom_plan INTEGER DEFAULT 0
 )
 """)
 
