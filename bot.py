@@ -325,7 +325,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             protect_content=True
         )
 
-        # SAVE MESSAGE ID
+                # SAVE MESSAGE ID
         cursor.execute(
             "UPDATE invites SET invite_link_id=? WHERE user_id=?",
             (invite_message.message_id, user_id)
@@ -333,9 +333,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         conn.commit()
 
-        await query.message.edit_text(
-            "✅ User approved successfully."
-        )
+        try:
+            await query.message.edit_caption(
+                caption="✅ User approved successfully."
+            )
+        except:
+            await query.message.edit_text(
+                "✅ User approved successfully."
+            )
 
     # DECLINE USER
     elif query.data.startswith("decline_"):
@@ -350,9 +355,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         )
 
-        await query.message.edit_text(
-            "❌ Payment declined."
-        )
+        try:
+            await query.message.edit_caption(
+                caption="❌ Payment declined."
+            )
+        except:
+            await query.message.edit_text(
+                "❌ Payment declined."
+            )
 
 # RECEIPT UPLOAD
 async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
