@@ -431,8 +431,20 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     user = update.effective_user
 
-    if not update.message.text.isdigit():
-        return
+    if not update.message:
+    return
+
+if not update.message.text:
+    return
+
+if not update.message.text.isdigit():
+    return
+
+months = int(update.message.text)
+
+await update.message.reply_text(
+    f"TEST: You entered {months} month(s)"
+)
 
     months = int(update.message.text)
 
