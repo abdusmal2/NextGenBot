@@ -207,8 +207,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "12"
         )
 
-            # MANUAL PAYMENT
-        elif query.data == "manual_payment":
+    # MANUAL PAYMENT
+    elif query.data == "manual_payment":
 
         await query.message.reply_text(
             "💳 Manual Payment\n\n"
