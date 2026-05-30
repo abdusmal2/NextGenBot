@@ -225,13 +225,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🌐 Online payment system coming soon."
         )
 
-        # CONFIRM PAYMENT
+           # CONFIRM PAYMENT
     elif query.data == "confirm_manual_payment":
 
         user = query.from_user
 
         cursor.execute(
-            "SELECT plan_months, amount FROM users WHERE user_id=?",
+            "SELECT plan_months, amount, receipt_file_id FROM users WHERE user_id=?",
             (user.id,)
         )
 
@@ -245,6 +245,13 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         months = result[0]
         amount = result[1]
+        receipt_file_id = result[2]
+
+        if not receipt_file_id:
+            await query.message.reply_text(
+                "❌ Please upload your payment receipt first."
+            )
+            return
 
         admin_keyboard = [
             [
@@ -259,16 +266,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             ]
         ]
 
-                cursor.execute(
-            "SELECT receipt_file_id FROM users WHERE user_id=?",
-            (user.id,)
-        )
-
-        receipt = cursor.fetchone()
-
         await context.bot.send_photo(
             chat_id=ADMIN_ID,
-            photo=receipt[0],
+            photo=receipt_file_id,
             caption=(
                 "🚨 New Manual Payment Request\n\n"
                 f"Username: @{user.username}\n"
