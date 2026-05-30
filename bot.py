@@ -218,8 +218,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "After payment, send your receipt screenshot here."
     )
 
-# ONLINE PAYMENT
-elif query.data == "online_payment":
+    # ONLINE PAYMEN 
+    elif query.data == "online_payment":
 
         await query.message.reply_text(
             "🌐 Online payment system coming soon."
