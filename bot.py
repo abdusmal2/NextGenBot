@@ -48,6 +48,13 @@ CREATE TABLE IF NOT EXISTS users (
 )
 """)
 
+try:
+    cursor.execute(
+        "ALTER TABLE users ADD COLUMN waiting_custom_plan INTEGER DEFAULT 0"
+    )
+except:
+    pass
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS invites (
     user_id INTEGER,
