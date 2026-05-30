@@ -556,6 +556,13 @@ telegram_app.add_handler(
 
 telegram_app.add_handler(
     MessageHandler(
+        filters.TEXT & ~filters.COMMAND,
+        custom_plan_handler
+    )
+)
+
+telegram_app.add_handler(
+    MessageHandler(
         filters.StatusUpdate.NEW_CHAT_MEMBERS,
         new_member
     )
