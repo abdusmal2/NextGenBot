@@ -196,8 +196,15 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # CUSTOM PLAN
+        # CUSTOM PLAN
     elif query.data == "custom_plan":
+
+        cursor.execute(
+            "UPDATE users SET waiting_custom_plan=1 WHERE user_id=?",
+            (query.from_user.id,)
+        )
+
+        conn.commit()
 
         await query.message.reply_text(
             "📝 Custom VIP Plan\n\n"
