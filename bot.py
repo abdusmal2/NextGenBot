@@ -208,25 +208,15 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     # MANUAL PAYMENT
-    elif query.data == "manual_payment":
+elif query.data == "manual_payment":
 
-        keyboard = [
-            [
-                InlineKeyboardButton(
-                    "✅ I Have Paid",
-                    callback_data="confirm_manual_payment"
-                )
-            ]
-        ]
-
-        await query.message.reply_text(
-            "💳 Manual Payment\n\n"
-            "Bank: Opay\n"
-            "Account Name: YOUR NAME\n"
-            "Account Number: 1234567890\n\n"
-            "After payment click the button below.",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+    await query.message.reply_text(
+        "💳 Manual Payment\n\n"
+        "Bank: Opay\n"
+        "Account Name: YOUR NAME\n"
+        "Account Number: 1234567890\n\n"
+        "After payment, send your receipt screenshot here."
+    )
 
     # ONLINE PAYMENT
     elif query.data == "online_payment":
@@ -350,6 +340,37 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "❌ Payment declined."
         )
 
+# RECEIPT UPLOAD
+async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    user = update.effective_user
+
+    if not update.message.photo:
+        return
+
+    photo = update.message.photo[-1]
+
+    cursor.execute(
+        "UPDATE users SET receipt_file_id=? WHERE user_id=?",
+        (photo.file_id, user.id)
+    )
+
+    conn.commit()
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "✅ I Have Paid",
+                callback_data="confirm_manual_payment"
+            )
+        ]
+    ]
+
+    await update.message.reply_text(
+        "✅ Receipt received.\n\n"
+        "Click the button below to notify admin.",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
 # JOIN DETECTION
 async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
