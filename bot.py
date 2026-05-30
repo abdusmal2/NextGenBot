@@ -207,18 +207,18 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "12"
         )
 
-        # MANUAL PAYMENT
+            # MANUAL PAYMENT
     elif query.data == "manual_payment":
 
-    await query.message.reply_text(
-        "💳 Manual Payment\n\n"
-        "Bank: Opay\n"
-        "Account Name: YOUR NAME\n"
-        "Account Number: 1234567890\n\n"
-        "After payment, send your receipt screenshot here."
-    )
+        await query.message.reply_text(
+            "💳 Manual Payment\n\n"
+            "Bank: Opay\n"
+            "Account Name: YOUR NAME\n"
+            "Account Number: 1234567890\n\n"
+            "After payment, send your receipt screenshot here."
+        )
 
-    # ONLINE PAYMEN 
+    # ONLINE PAYMENT
     elif query.data == "online_payment":
 
         await query.message.reply_text(
