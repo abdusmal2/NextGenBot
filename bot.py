@@ -237,8 +237,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         result = cursor.fetchone()
 
-        months = result[0]
-        amount = result[1]
+if not result:
+
+    await query.message.reply_text(
+        "❌ No plan selected.\nPlease select a VIP plan first."
+    )
+
+    return
+
+months = result[0]
+amount = result[1]
 
         admin_keyboard = [
             [
@@ -265,12 +273,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(admin_keyboard)
         )
 
-        await query.message.reply_text(
+                await query.message.reply_text(
             "✅ Payment request sent to admin.\n"
             "Please wait for confirmation."
         )
 
-            # APPROVE USER
+    # APPROVE USER
     elif query.data.startswith("approve_"):
 
         user_id = int(query.data.split("_")[1])
