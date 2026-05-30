@@ -207,7 +207,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "12"
         )
 
-    # MANUAL PAYMENT
+        # MANUAL PAYMENT
     elif query.data == "manual_payment":
 
         await query.message.reply_text(
@@ -215,23 +215,21 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "Bank: Opay\n"
             "Account Name: YOUR NAME\n"
             "Account Number: 1234567890\n\n"
-            "📷 STEP 1:\n"
-            "Make payment and send your receipt screenshot here.\n\n"
-            "✅ STEP 2:\n"
-            "After sending the receipt, click the button below."
+            "📷 Please make payment and send your receipt screenshot here.\n\n"
+            "After sending the receipt, click the 'I Have Paid' button."
         )
 
         keyboard = [
             [
                 InlineKeyboardButton(
-                    "✅ I Have Sent My Receipt",
+                    "✅ I Have Paid",
                     callback_data="confirm_manual_payment"
                 )
             ]
         ]
 
         await query.message.reply_text(
-            "Click below after uploading your receipt.",
+            "Click the button below after sending your receipt.",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
