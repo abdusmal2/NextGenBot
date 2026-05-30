@@ -106,7 +106,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"👋 Welcome To NextGen Dub Studio Bot, {user.first_name}!\n\n"
         "🎬 This bot provides access to our VIP community where you can enjoy exclusive dubbed movies, series, and premium content.\n\n"
         "⚠️ If you join the VIP group late and discover that you missed some movies or episodes, please contact our administrators for assistance:\n\n"
-        "👤 @Abdusmal\n"
+        "👤 @Abdusmal1\n"
         "👤 @D16graphics\n\n"
         "They will help you with any questions or missing content.\n\n"
         "💎 To enter the VIP group, please select a subscription plan below.",
@@ -351,7 +351,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             chat_id=user_id,
             text=(
                 "❌ Payment not received.\n"
-                "Please complete payment and try again or contact admin."
+                "Please complete payment and try again or contact admin @abdusmal1 @d16graphics."
             )
         )
 
