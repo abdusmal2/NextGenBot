@@ -24,13 +24,7 @@ VIP_GROUP_ID = -1003910567293
 # DATABASE
 conn = sqlite3.connect("users.db", check_same_thread=False)
 cursor = conn.cursor()
-try:
-    cursor.execute(
-        "ALTER TABLE users ADD COLUMN receipt_file_id TEXT"
-    )
-    conn.commit()
-except:
-    pass
+
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
