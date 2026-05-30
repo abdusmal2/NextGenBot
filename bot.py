@@ -218,8 +218,8 @@ elif query.data == "manual_payment":
         "After payment, send your receipt screenshot here."
     )
 
-    # ONLINE PAYMENT
-    elif query.data == "online_payment":
+# ONLINE PAYMENT
+elif query.data == "online_payment":
 
         await query.message.reply_text(
             "🌐 Online payment system coming soon."
