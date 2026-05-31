@@ -439,9 +439,6 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     months = int(update.message.text)
 
-    await update.message.reply_text(
-        f"TEST: You entered {months} month(s)"
-    )
 
     user = update.effective_user
 
@@ -457,40 +454,40 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     amount = months * 500
 
-    cursor.execute(
-        """
-        UPDATE users
-        SET plan_months=?,
-            amount=?,
-            waiting_custom_plan=0
-        WHERE user_id=?
-        """,
-        (months, amount, user.id)
-    )
+cursor.execute(
+    """
+    UPDATE users
+    SET plan_months=?,
+        amount=?,
+        waiting_custom_plan=0
+    WHERE user_id=?
+    """,
+    (months, amount, user.id)
+)
 
-    conn.commit()
+conn.commit()
 
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "💳 Manual Payment",
-                callback_data="manual_payment"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "🌐 Online Payment",
-                callback_data="online_payment"
-            )
-        ]
+keyboard = [
+    [
+        InlineKeyboardButton(
+            "💳 Manual Payment",
+            callback_data="manual_payment"
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            "🌐 Online Payment",
+            callback_data="online_payment"
+        )
     ]
+]
 
-    await update.message.reply_text(
-        f"💎 {months} Month VIP Plan\n\n"
-        f"You are to pay ₦{amount} to get access.\n\n"
-        "Choose a payment method below.",
-        reply_markup=InlineKeyboardMarkup(keyboard)
-    )
+await update.message.reply_text(
+    f"💎 {months} Month VIP Plan\n\n"
+    f"You are to pay ₦{amount} to get access.\n\n"
+    "Choose a payment method below.",
+    reply_markup=InlineKeyboardMarkup(keyboard)
+)
 
 # JOIN DETECTION
 async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
