@@ -573,6 +573,66 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
+from datetime import datetime
+
+async def expiry_checker(context: ContextTypes.DEFAULT_TYPE):
+
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    cursor.execute(
+        """
+        SELECT user_id
+        FROM users
+        WHERE paid=1
+        AND vip_joined=1
+        AND expiry_date<=?
+        """,
+        (today,)
+    )
+
+    expired_users = cursor.fetchall()
+
+    for user in expired_users:
+
+        user_id = user[0]
+
+        try:
+            await context.bot.ban_chat_member(
+                chat_id=VIP_GROUP_ID,
+                user_id=user_id
+            )
+
+            await context.bot.unban_chat_member(
+                chat_id=VIP_GROUP_ID,
+                user_id=user_id
+            )
+
+        except:
+            pass
+
+        try:
+            await context.bot.send_message(
+                chat_id=user_id,
+                text=(
+                    "⛔ Your VIP subscription has expired.\n\n"
+                    "Please renew your subscription to regain access."
+                )
+            )
+        except:
+            pass
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET paid=0,
+                vip_joined=0
+            WHERE user_id=?
+            """,
+            (user_id,)
+        )
+
+    conn.commit()
+
 # JOIN DETECTION
 async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
