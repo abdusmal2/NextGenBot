@@ -88,25 +88,31 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     conn.commit()
 
     keyboard = [
-        [
-            InlineKeyboardButton(
-                "📅 1 Month",
-                callback_data="plan_1"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "📅 2 Months",
-                callback_data="plan_2"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "📝 Custom Plan",
-                callback_data="custom_plan"
-            )
-        ]
+    [
+        InlineKeyboardButton(
+            "🔄 Renew Subscription",
+            callback_data="renew_subscription"
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            "📅 1 Month",
+            callback_data="plan_1"
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            "📅 2 Months",
+            callback_data="plan_2"
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            "📝 Custom Plan",
+            callback_data="custom_plan"
+        )
     ]
+]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
@@ -138,6 +144,44 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
     await query.answer()
+
+# RENEW SUBSCRIPTION
+elif query.data == "renew_subscription":
+
+    await query.message.reply_text(
+        "🔄 VIP Subscription Renewal\n\n"
+        "Select the duration you want to add to your current VIP subscription:\n\n"
+        "📅 1 Month = ₦500\n"
+        "📅 2 Months = ₦1000\n"
+        "📝 Custom Plan = ₦500 per month\n\n"
+        "Choose one of the subscription plans below."
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "📅 1 Month",
+                callback_data="plan_1"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📅 2 Months",
+                callback_data="plan_2"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📝 Custom Plan",
+                callback_data="custom_plan"
+            )
+        ]
+    ]
+
+    await query.message.reply_text(
+        "Select a renewal plan:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
     # 1 MONTH PLAN
     if query.data == "plan_1":
