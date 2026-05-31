@@ -733,16 +733,9 @@ telegram_app.add_handler(
 )
 
 
-@app.on_event("startup")
+@@app.on_event("startup")
 async def startup():
-
     await telegram_app.initialize()
-
-    telegram_app.job_queue.run_repeating(
-        expiry_checker,
-        interval=3600,
-        first=10
-    )
 
 
 @app.post("/")
