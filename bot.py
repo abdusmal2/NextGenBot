@@ -449,10 +449,13 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     result = cursor.fetchone()
 
-    if not result or result[0] != 1:
-        return
+if not result:
+    return
 
-        amount = months * 500
+if result[0] != 1:
+    return
+
+amount = months * 500
 
     cursor.execute(
         """
