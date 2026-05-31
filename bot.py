@@ -361,7 +361,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # APPROVE USER
     elif query.data.startswith("approve_"):
 
+        from datetime import datetime, timedelta
+
         user_id = int(query.data.split("_")[1])
+
+        cursor.execute(
+            "SELECT plan_months FROM users WHERE user_id=?",
+            (user_id,)
+        )
+
+        result = cursor.fetchone()
+
+        months = result[0]
+
+        expiry_date = (
+            datetime.now() + timedelta(days=(months * 30))
+        ).strftime("%Y-%m-%d")
 
         invite = await context.bot.create_chat_invite_link(
             chat_id=VIP_GROUP_ID,
@@ -375,6 +390,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 invite.invite_link,
                 0
             )
+        )
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET paid=1,
+                expiry_date=?
+            WHERE user_id=?
+            """,
+            (expiry_date, user_id)
         )
 
         conn.commit()
@@ -392,6 +417,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             chat_id=user_id,
             text=(
                 "✅ Payment Approved!\n\n"
+                f"📅 Subscription: {months} Month(s)\n"
+                f"⏳ Expires: {expiry_date}\n\n"
                 "Tap the button below to join VIP.\n\n"
                 "⚠️ Link usable only once."
             ),
@@ -399,7 +426,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             protect_content=True
         )
 
-                # SAVE MESSAGE ID
+        # SAVE MESSAGE ID
         cursor.execute(
             "UPDATE invites SET invite_link_id=? WHERE user_id=?",
             (invite_message.message_id, user_id)
