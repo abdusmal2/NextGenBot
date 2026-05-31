@@ -375,7 +375,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         from datetime import datetime, timedelta
 
-                user_id = int(query.data.split("_")[1])
+        user_id = int(query.data.split("_")[1])
 
         cursor.execute(
             """
