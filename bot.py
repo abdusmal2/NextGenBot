@@ -25,10 +25,19 @@ VIP_GROUP_ID = -1003910567293
 conn = sqlite3.connect("users.db", check_same_thread=False)
 cursor = conn.cursor()
 
-# ADD NEW COLUMN IF IT DOESN'T EXIST
+# ADD RECEIPT COLUMN
 try:
     cursor.execute(
         "ALTER TABLE users ADD COLUMN receipt_file_id TEXT"
+    )
+    conn.commit()
+except:
+    pass
+
+# ADD VIP JOINED COLUMN
+try:
+    cursor.execute(
+        "ALTER TABLE users ADD COLUMN vip_joined INTEGER DEFAULT 0"
     )
     conn.commit()
 except:
@@ -588,13 +597,20 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
             # DELETE INVITE MESSAGE
-            try:
+                        try:
                 await context.bot.delete_message(
                     chat_id=user_id,
                     message_id=message_id
                 )
             except:
                 pass
+
+            cursor.execute(
+                "UPDATE users SET vip_joined=1 WHERE user_id=?",
+                (user_id,)
+            )
+
+            conn.commit()
 
             # DELETE SAVED INVITE
             cursor.execute(
@@ -656,7 +672,14 @@ telegram_app.add_handler(
 
 @app.on_event("startup")
 async def startup():
+
     await telegram_app.initialize()
+
+    telegram_app.job_queue.run_repeating(
+        expiry_checker,
+        interval=3600,
+        first=10
+    )
 
 
 @app.post("/")
