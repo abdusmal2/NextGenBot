@@ -577,7 +577,7 @@ from datetime import datetime
 
 async def expiry_checker(context: ContextTypes.DEFAULT_TYPE):
 
-print("Expiry checker running...")
+    print("Expiry checker running...")
 
     today = datetime.now().strftime("%Y-%m-%d")
 
