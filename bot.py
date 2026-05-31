@@ -34,6 +34,15 @@ try:
 except:
     pass
 
+# ADD WAITING CUSTOM PLAN COLUMN
+try:
+    cursor.execute(
+        "ALTER TABLE users ADD COLUMN waiting_custom_plan INTEGER DEFAULT 0"
+    )
+    conn.commit()
+except:
+    pass
+
 # ADD VIP JOINED COLUMN
 try:
     cursor.execute(
@@ -52,17 +61,11 @@ CREATE TABLE IF NOT EXISTS users (
     plan_months INTEGER DEFAULT 0,
     amount INTEGER DEFAULT 0,
     expiry_date TEXT,
-    receipt_file_id TEXT
-    waiting_custom_plan INTEGER DEFAULT 0
+    receipt_file_id TEXT,
+    waiting_custom_plan INTEGER DEFAULT 0,
+    vip_joined INTEGER DEFAULT 0
 )
 """)
-
-try:
-    cursor.execute(
-        "ALTER TABLE users ADD COLUMN waiting_custom_plan INTEGER DEFAULT 0"
-    )
-except:
-    pass
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS invites (
