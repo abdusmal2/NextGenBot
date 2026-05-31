@@ -733,7 +733,7 @@ telegram_app.add_handler(
 )
 
 
-@@app.on_event("startup")
+@app.on_event("startup")
 async def startup():
     await telegram_app.initialize()
 
