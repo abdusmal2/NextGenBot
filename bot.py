@@ -437,10 +437,8 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     if not update.message.text.isdigit():
         return
 
-    months = int(update.message.text)
-
-
     user = update.effective_user
+    months = int(update.message.text)
 
     cursor.execute(
         "SELECT waiting_custom_plan FROM users WHERE user_id=?",
@@ -449,13 +447,13 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     result = cursor.fetchone()
 
-if not result:
-    return
+    if not result:
+        return
 
-if result[0] != 1:
-    return
+    if result[0] != 1:
+        return
 
-amount = months * 500
+    amount = months * 500
 
     cursor.execute(
         """
