@@ -377,51 +377,51 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user_id = int(query.data.split("_")[1])
 
-        cursor.execute(
-    """
-    SELECT plan_months, expiry_date
-    FROM users
-    WHERE user_id=?
-    """,
-    (user_id,)
-)
-
-result = cursor.fetchone()
-
-months = result[0]
-current_expiry = result[1]
-
-today = datetime.now()
-
-# EXTEND EXISTING SUBSCRIPTION
-if current_expiry:
-
-    try:
-        expiry_dt = datetime.strptime(
-            current_expiry,
-            "%Y-%m-%d"
+                cursor.execute(
+            """
+            SELECT plan_months, expiry_date
+            FROM users
+            WHERE user_id=?
+            """,
+            (user_id,)
         )
 
-        if expiry_dt > today:
-            expiry_dt = expiry_dt + timedelta(
-                days=(months * 30)
-            )
+        result = cursor.fetchone()
+
+        months = result[0]
+        current_expiry = result[1]
+
+        today = datetime.now()
+
+        # EXTEND EXISTING SUBSCRIPTION
+        if current_expiry:
+
+            try:
+                expiry_dt = datetime.strptime(
+                    current_expiry,
+                    "%Y-%m-%d"
+                )
+
+                if expiry_dt > today:
+                    expiry_dt = expiry_dt + timedelta(
+                        days=(months * 30)
+                    )
+                else:
+                    expiry_dt = today + timedelta(
+                        days=(months * 30)
+                    )
+
+            except:
+                expiry_dt = today + timedelta(
+                    days=(months * 30)
+                )
+
         else:
             expiry_dt = today + timedelta(
                 days=(months * 30)
             )
 
-    except:
-        expiry_dt = today + timedelta(
-            days=(months * 30)
-        )
-
-else:
-    expiry_dt = today + timedelta(
-        days=(months * 30)
-    )
-
-expiry_date = expiry_dt.strftime("%Y-%m-%d")
+        expiry_date = expiry_dt.strftime("%Y-%m-%d")
 
         invite = await context.bot.create_chat_invite_link(
             chat_id=VIP_GROUP_ID,
