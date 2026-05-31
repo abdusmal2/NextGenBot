@@ -600,7 +600,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
             # DELETE INVITE MESSAGE
-                        try:
+            try:
                 await context.bot.delete_message(
                     chat_id=user_id,
                     message_id=message_id
