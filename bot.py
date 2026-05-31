@@ -143,10 +143,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
-    await query.answer()
+await query.answer()
 
 # RENEW SUBSCRIPTION
-elif query.data == "renew_subscription":
+if query.data == "renew_subscription":
 
     await query.message.reply_text(
         "🔄 VIP Subscription Renewal\n\n"
