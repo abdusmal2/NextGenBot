@@ -158,7 +158,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     # RENEW SUBSCRIPTION
-elif query.data == "renew_subscription":
+    elif query.data == "renew_subscription":
 
     cursor.execute(
         """
