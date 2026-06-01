@@ -158,15 +158,26 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
     # RENEW SUBSCRIPTION
-    if query.data == "renew_subscription":
+elif query.data == "renew_subscription":
+
+    cursor.execute(
+        """
+        SELECT paid, expiry_date
+        FROM users
+        WHERE user_id=?
+        """,
+        (query.from_user.id,)
+    )
+
+    result = cursor.fetchone()
+
+    if not result or result[0] != 1:
 
         await query.message.reply_text(
-            "🔄 VIP Subscription Renewal\n\n"
-            "Select the duration you want to add to your current VIP subscription:\n\n"
-            "📅 1 Month = ₦500\n"
-            "📅 2 Months = ₦1000\n"
-            "📝 Custom Plan = ₦500 per month\n\n"
-            "Choose one of the subscription plans below."
+            "❌ No Active Subscription\n\n"
+            "You do not currently have an active VIP subscription.\n\n"
+            "🎬 Purchase a VIP plan to gain access to exclusive dubbed movies, series, and premium content.\n\n"
+            "👇 Choose a subscription plan below."
         )
 
         keyboard = [
@@ -191,9 +202,11 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
 
         await query.message.reply_text(
-            "Select a renewal plan:",
+            "Select a plan:",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
+
+        return
 
     # 1 MONTH PLAN
     elif query.data == "plan_1":
