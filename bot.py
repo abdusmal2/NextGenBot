@@ -534,16 +534,17 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     amount = months * 500
 
-    cursor.execute(
-        """
-        UPDATE users
-        SET plan_months=?,
-            amount=?,
-            waiting_custom_plan=0
-        WHERE user_id=?
-        """,
-        (months, amount, user.id)
-    )
+cursor.execute(
+    """
+    UPDATE users
+    SET plan_months=?,
+        amount=?,
+        waiting_custom_plan=0,
+        receipt_file_id=NULL
+    WHERE user_id=?
+    """,
+    (months, amount, user.id)
+)
 
     conn.commit()
 
