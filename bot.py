@@ -222,8 +222,8 @@ if query.data == "renew_subscription":
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
     
-    # 1 MONTH PLAN
-    elif query.data == "plan_1":
+# 1 MONTH PLAN
+elif query.data == "plan_1":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
