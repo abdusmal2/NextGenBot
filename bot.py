@@ -254,8 +254,8 @@ elif query.data == "plan_1":
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # 2 MONTH PLAN
-    elif query.data == "plan_2":
+# 2 MONTH PLAN
+elif query.data == "plan_2":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
