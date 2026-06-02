@@ -397,8 +397,8 @@ elif query.data == "confirm_manual_payment":
             "Please wait for confirmation."
         )
 
-    # APPROVE USER
-    elif query.data.startswith("approve_"):
+# APPROVE USER
+elif query.data.startswith("approve_"):
 
         from datetime import datetime, timedelta
 
@@ -516,8 +516,8 @@ elif query.data == "confirm_manual_payment":
                 "✅ User approved successfully."
             )
 
-    # DECLINE USER
-    elif query.data.startswith("decline_"):
+# DECLINE USER
+elif query.data.startswith("decline_"):
 
         user_id = int(query.data.split("_")[1])
 
