@@ -157,8 +157,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
-# RENEW SUBSCRIPTION
-if query.data == "renew_subscription":
+    # RENEW SUBSCRIPTION
+    if query.data == "renew_subscription":
 
     from datetime import datetime
 
@@ -222,8 +222,8 @@ if query.data == "renew_subscription":
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
     
-# 1 MONTH PLAN
-elif query.data == "plan_1":
+    # 1 MONTH PLAN
+    elif query.data == "plan_1":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
@@ -254,8 +254,8 @@ elif query.data == "plan_1":
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-# 2 MONTH PLAN
-elif query.data == "plan_2":
+    # 2 MONTH PLAN
+    elif query.data == "plan_2":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
@@ -286,8 +286,8 @@ elif query.data == "plan_2":
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-# CUSTOM PLAN
-elif query.data == "custom_plan":
+    # CUSTOM PLAN
+    elif query.data == "custom_plan":
 
         cursor.execute(
             "UPDATE users SET waiting_custom_plan=1 WHERE user_id=?",
