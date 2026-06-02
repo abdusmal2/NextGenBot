@@ -403,9 +403,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cursor.execute(
             """
             UPDATE users
-            SET paid=1,
-                expiry_date=?
-            WHERE user_id=?
+    SET paid=1,
+        expiry_date=?,
+        receipt_file_id=NULL
+    WHERE user_id=?
             """,
             (expiry_date, user_id)
         )
