@@ -286,8 +286,8 @@ elif query.data == "plan_2":
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # CUSTOM PLAN
-    elif query.data == "custom_plan":
+# CUSTOM PLAN
+elif query.data == "custom_plan":
 
         cursor.execute(
             "UPDATE users SET waiting_custom_plan=1 WHERE user_id=?",
