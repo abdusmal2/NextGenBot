@@ -157,8 +157,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
-    # RENEW SUBSCRIPTION
-    if query.data == "renew_subscription":
+# RENEW SUBSCRIPTION
+if query.data == "renew_subscription":
 
     from datetime import datetime
 
@@ -222,8 +222,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
     
-    # 1 MONTH PLAN
-    elif query.data == "plan_1":
+# 1 MONTH PLAN
+elif query.data == "plan_1":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
@@ -254,8 +254,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # 2 MONTH PLAN
-    elif query.data == "plan_2":
+# 2 MONTH PLAN
+elif query.data == "plan_2":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
@@ -286,8 +286,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # CUSTOM PLAN
-    elif query.data == "custom_plan":
+# CUSTOM PLAN
+elif query.data == "custom_plan":
 
         cursor.execute(
             "UPDATE users SET waiting_custom_plan=1 WHERE user_id=?",
@@ -305,8 +305,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "12"
         )
 
-        # MANUAL PAYMENT
-    elif query.data == "manual_payment":
+# MANUAL PAYMENT
+elif query.data == "manual_payment":
 
         await query.message.reply_text(
             "💳 Manual Payment\n\n"
@@ -331,8 +331,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # ONLINE PAYMENT
-    elif query.data == "online_payment":
+# ONLINE PAYMENT
+elif query.data == "online_payment":
 
         await query.message.reply_text(
             "🌐 Online payment system coming soon."
