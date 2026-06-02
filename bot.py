@@ -157,59 +157,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
-    # RENEW SUBSCRIPTION
-    elif query.data == "renew_subscription":
-
-    cursor.execute(
-        """
-        SELECT paid, expiry_date
-        FROM users
-        WHERE user_id=?
-        """,
-        (query.from_user.id,)
-    )
-
-    result = cursor.fetchone()
-
-    if not result or result[0] != 1:
-
-        await query.message.reply_text(
-            "❌ No Active Subscription\n\n"
-            "You do not currently have an active VIP subscription.\n\n"
-            "🎬 Purchase a VIP plan to gain access to exclusive dubbed movies, series, and premium content.\n\n"
-            "👇 Choose a subscription plan below."
-        )
-
-        keyboard = [
-            [
-                InlineKeyboardButton(
-                    "📅 1 Month",
-                    callback_data="plan_1"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "📅 2 Months",
-                    callback_data="plan_2"
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "📝 Custom Plan",
-                    callback_data="custom_plan"
-                )
-            ]
-        ]
-
-        await query.message.reply_text(
-            "Select a plan:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-
-        return
-
+    
     # 1 MONTH PLAN
-    elif query.data == "plan_1":
+    if query.data == "plan_1":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
