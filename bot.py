@@ -338,8 +338,8 @@ elif query.data == "online_payment":
             "🌐 Online payment system coming soon."
         )
 
-           # CONFIRM PAYMENT
-    elif query.data == "confirm_manual_payment":
+# CONFIRM PAYMENT
+elif query.data == "confirm_manual_payment":
 
         user = query.from_user
 
