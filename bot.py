@@ -214,9 +214,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # 1 MONTH PLAN
     elif query.data == "plan_1":
-    
-# 1 MONTH PLAN
-    if query.data == "plan_1":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
