@@ -157,32 +157,32 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
-# RENEW SUBSCRIPTION
+    # RENEW SUBSCRIPTION
     if query.data == "renew_subscription":
 
-    from datetime import datetime
+        from datetime import datetime
 
-    cursor.execute(
-        """
-        SELECT paid, expiry_date
-        FROM users
-        WHERE user_id=?
-        """,
-        (query.from_user.id,)
-    )
-
-    result = cursor.fetchone()
-
-    if not result or result[0] != 1:
-
-        await query.message.reply_text(
-            "❌ No Active Subscription\n\n"
-            "You do not currently have an active VIP subscription.\n\n"
-            "🎬 Subscribe to VIP to access exclusive dubbed movies, series and premium content.\n\n"
-            "👇 Choose a plan below."
+        cursor.execute(
+            """
+            SELECT paid, expiry_date
+            FROM users
+            WHERE user_id=?
+            """,
+            (query.from_user.id,)
         )
 
-        return
+        result = cursor.fetchone()
+
+        if not result or result[0] != 1:
+
+            await query.message.reply_text(
+                "❌ No Active Subscription\n\n"
+                "You do not currently have an active VIP subscription.\n\n"
+                "🎬 Subscribe to VIP to access exclusive dubbed movies, series and premium content.\n\n"
+                "👇 Choose a plan below."
+            )
+
+            return
 
     expiry_date = result[1]
 
