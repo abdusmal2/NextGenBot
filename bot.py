@@ -158,7 +158,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
 
 # RENEW SUBSCRIPTION
-if query.data == "renew_subscription":
+    if query.data == "renew_subscription":
 
     from datetime import datetime
 
@@ -223,7 +223,7 @@ if query.data == "renew_subscription":
     )
     
 # 1 MONTH PLAN
-elif query.data == "plan_1":
+    elif query.data == "plan_1":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
@@ -255,7 +255,7 @@ elif query.data == "plan_1":
         )
 
 # 2 MONTH PLAN
-elif query.data == "plan_2":
+    elif query.data == "plan_2":
 
         cursor.execute(
             "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
@@ -287,7 +287,7 @@ elif query.data == "plan_2":
         )
 
 # CUSTOM PLAN
-elif query.data == "custom_plan":
+    elif query.data == "custom_plan":
 
         cursor.execute(
             "UPDATE users SET waiting_custom_plan=1 WHERE user_id=?",
@@ -306,7 +306,7 @@ elif query.data == "custom_plan":
         )
 
 # MANUAL PAYMENT
-elif query.data == "manual_payment":
+    elif query.data == "manual_payment":
 
         await query.message.reply_text(
             "💳 Manual Payment\n\n"
@@ -332,14 +332,14 @@ elif query.data == "manual_payment":
         )
 
 # ONLINE PAYMENT
-elif query.data == "online_payment":
+    elif query.data == "online_payment":
 
         await query.message.reply_text(
             "🌐 Online payment system coming soon."
         )
 
 # CONFIRM PAYMENT
-elif query.data == "confirm_manual_payment":
+    elif query.data == "confirm_manual_payment":
 
         user = query.from_user
 
@@ -398,7 +398,7 @@ elif query.data == "confirm_manual_payment":
         )
 
 # APPROVE USER
-elif query.data.startswith("approve_"):
+    elif query.data.startswith("approve_"):
 
         from datetime import datetime, timedelta
 
@@ -517,7 +517,7 @@ elif query.data.startswith("approve_"):
             )
 
 # DECLINE USER
-elif query.data.startswith("decline_"):
+    elif query.data.startswith("decline_"):
 
         user_id = int(query.data.split("_")[1])
 
