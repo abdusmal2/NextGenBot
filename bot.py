@@ -529,9 +529,23 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 # RECEIPT UPLOAD
+# RECEIPT UPLOAD
 async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
+    if update.effective_chat.type != "private":
+        return
+
     user = update.effective_user
+
+    cursor.execute(
+        "SELECT plan_months FROM users WHERE user_id=?",
+        (user.id,)
+    )
+
+    result = cursor.fetchone()
+
+    if not result or result[0] == 0:
+        return
 
     if not update.message.photo:
         return
