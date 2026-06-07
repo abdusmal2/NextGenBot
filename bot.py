@@ -537,6 +537,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "✅ User approved successfully."
             )
 
+        return
+
     # DECLINE USER
     elif query.data.startswith("decline_"):
 
@@ -553,22 +555,24 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         conn.commit()
 
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=(
-            "❌ Payment not received.\n"
-            "Please complete payment and try again or contact admin @abdusmal1 @d16graphics."
+        await context.bot.send_message(
+            chat_id=user_id,
+            text=(
+                "❌ Payment not received.\n"
+                "Please complete payment and try again or contact admin @abdusmal1 @d16graphics."
+            )
         )
-    )
 
-    try:
-        await query.message.edit_caption(
-            caption="❌ Payment declined."
-        )
-    except:
-        await query.message.edit_text(
-            "❌ Payment declined."
-        )
+        try:
+            await query.message.edit_caption(
+                caption="❌ Payment declined."
+            )
+        except:
+            await query.message.edit_text(
+                "❌ Payment declined."
+            )
+
+        return
 
 # RECEIPT UPLOAD
 async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
