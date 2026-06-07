@@ -537,21 +537,21 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "✅ User approved successfully."
             )
 
-# DECLINE USER
-elif query.data.startswith("decline_"):
+    # DECLINE USER
+    elif query.data.startswith("decline_"):
 
-    user_id = int(query.data.split("_")[1])
+        user_id = int(query.data.split("_")[1])
 
-    cursor.execute(
-        """
-        UPDATE users
-        SET payment_pending=0
-        WHERE user_id=?
-        """,
-        (user_id,)
-    )
+        cursor.execute(
+            """
+            UPDATE users
+            SET payment_pending=0
+            WHERE user_id=?
+            """,
+            (user_id,)
+        )
 
-    conn.commit()
+        conn.commit()
 
     await context.bot.send_message(
         chat_id=user_id,
