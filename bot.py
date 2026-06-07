@@ -349,15 +349,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         result = cursor.fetchone()
 
-if payment_pending == 1:
-
-    await query.message.reply_text(
-        "⏳ Payment Already Pending\n\n"
-        "Your payment request has already been submitted and is awaiting admin review.\n\n"
-        "Please wait for approval or decline."
-    )
-    return
-
         if not result:
             await query.message.reply_text(
                 "❌ No plan selected."
@@ -368,6 +359,15 @@ if payment_pending == 1:
         amount = result[1]
         receipt_file_id = result[2]
         payment_pending = result[3]
+
+        if payment_pending == 1:
+
+            await query.message.reply_text(
+                "⏳ Payment Already Pending\n\n"
+                "Your payment request has already been submitted and is awaiting admin review.\n\n"
+                "Please wait for approval or decline."
+            )
+            return
 
         if not receipt_file_id:
             await query.message.reply_text(
@@ -387,17 +387,17 @@ if payment_pending == 1:
                 )
             ]
         ]
-        
-cursor.execute(
-    """
-    UPDATE users
-    SET payment_pending=1
-    WHERE user_id=?
-    """,
-    (user.id,)
-)
 
-conn.commit()
+        cursor.execute(
+            """
+            UPDATE users
+            SET payment_pending=1
+            WHERE user_id=?
+            """,
+            (user.id,)
+        )
+
+        conn.commit()
 
         await context.bot.send_photo(
             chat_id=ADMIN_ID,
