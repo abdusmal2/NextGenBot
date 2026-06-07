@@ -52,6 +52,15 @@ try:
 except:
     pass
 
+# ADD PAYMENT PENDING COLUMN
+try:
+    cursor.execute(
+        "ALTER TABLE users ADD COLUMN payment_pending INTEGER DEFAULT 0"
+    )
+    conn.commit()
+except:
+    pass
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
@@ -63,7 +72,7 @@ CREATE TABLE IF NOT EXISTS users (
     expiry_date TEXT,
     receipt_file_id TEXT,
     waiting_custom_plan INTEGER DEFAULT 0,
-    vip_joined INTEGER DEFAULT 0
+    vip_joined INTEGER DEFAULT 0, payment_pending INTEGER DEFAULT 0
 )
 """)
 
@@ -334,11 +343,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = query.from_user
 
         cursor.execute(
-            "SELECT plan_months, amount, receipt_file_id FROM users WHERE user_id=?",
+            "SELECT plan_months, amount, receipt_file_id, payment_pending FROM users WHERE user_id=?",
             (user.id,)
         )
 
         result = cursor.fetchone()
+
+if payment_pending == 1:
+
+    await query.message.reply_text(
+        "⏳ Payment Already Pending\n\n"
+        "Your payment request has already been submitted and is awaiting admin review.\n\n"
+        "Please wait for approval or decline."
+    )
+    return
 
         if not result:
             await query.message.reply_text(
@@ -349,6 +367,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         months = result[0]
         amount = result[1]
         receipt_file_id = result[2]
+        payment_pending = result[3]
 
         if not receipt_file_id:
             await query.message.reply_text(
@@ -368,6 +387,17 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             ]
         ]
+        
+cursor.execute(
+    """
+    UPDATE users
+    SET payment_pending=1
+    WHERE user_id=?
+    """,
+    (user.id,)
+)
+
+conn.commit()
 
         await context.bot.send_photo(
             chat_id=ADMIN_ID,
@@ -458,8 +488,9 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             """
             UPDATE users
     SET paid=1,
-        expiry_date=?,
-        receipt_file_id=NULL
+    expiry_date=?,
+    receipt_file_id=NULL,
+    payment_pending=0
     WHERE user_id=?
             """,
             (expiry_date, user_id)
@@ -507,28 +538,38 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
 # DECLINE USER
-    elif query.data.startswith("decline_"):
+elif query.data.startswith("decline_"):
 
-        user_id = int(query.data.split("_")[1])
+    user_id = int(query.data.split("_")[1])
 
-        await context.bot.send_message(
-            chat_id=user_id,
-            text=(
-                "❌ Payment not received.\n"
-                "Please complete payment and try again or contact admin @abdusmal1 @d16graphics."
-            )
+    cursor.execute(
+        """
+        UPDATE users
+        SET payment_pending=0
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    conn.commit()
+
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=(
+            "❌ Payment not received.\n"
+            "Please complete payment and try again or contact admin @abdusmal1 @d16graphics."
+        )
+    )
+
+    try:
+        await query.message.edit_caption(
+            caption="❌ Payment declined."
+        )
+    except:
+        await query.message.edit_text(
+            "❌ Payment declined."
         )
 
-        try:
-            await query.message.edit_caption(
-                caption="❌ Payment declined."
-            )
-        except:
-            await query.message.edit_text(
-                "❌ Payment declined."
-            )
-
-# RECEIPT UPLOAD
 # RECEIPT UPLOAD
 async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
