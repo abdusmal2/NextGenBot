@@ -60,6 +60,26 @@ try:
     conn.commit()
 except:
     pass
+  
+  # DEBUG SUBSCRIPTION
+async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    user_id = int(context.args[0])
+
+    cursor.execute(
+        """
+        SELECT paid, expiry_date, vip_joined
+        FROM users
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    result = cursor.fetchone()
+
+    await update.message.reply_text(
+        str(result)
+    )
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
@@ -823,6 +843,9 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("groupid", groupid))
 telegram_app.add_handler(CallbackQueryHandler(button_handler))
+telegram_app.add_handler(
+    CommandHandler("debug", debug)
+)
 
 telegram_app.add_handler(
     MessageHandler(
