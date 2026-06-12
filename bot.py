@@ -176,6 +176,35 @@ async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         f"Group ID:\n{chat_id}"
     )
+    
+# GROUP ID COMMAND
+async def groupid(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    chat_id = update.effective_chat.id
+
+    await update.message.reply_text(
+        f"Group ID:\n{chat_id}"
+    )
+
+
+# CHECK USER COMMAND
+async def checkuser(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    user_id = int(context.args[0])
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM users
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
+
+    result = cursor.fetchone()
+
+    await update.message.reply_text(str(result))
+
 
 
 # BUTTON HANDLER
@@ -199,9 +228,17 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         result = cursor.fetchone()
 
-        if not result or result[0] != 1:
+        if not result:
 
-            await query.message.reply_text(
+    await query.message.reply_text(
+        "⚠️ Account Not Found\n\n"
+        "Please send /start first and try again."
+    )
+    return
+
+if int(result[0]) != 1:
+
+    await query.message.reply_text(
                 "❌ No Active Subscription\n\n"
                 "You do not currently have an active VIP subscription.\n\n"
                 "🎬 Subscribe to VIP to access exclusive dubbed movies and premium content.\n\n"
@@ -844,6 +881,9 @@ telegram_app.add_handler(CommandHandler("groupid", groupid))
 telegram_app.add_handler(CallbackQueryHandler(button_handler))
 telegram_app.add_handler(
     CommandHandler("debug", debug)
+)
+telegram_app.add_handler(
+    CommandHandler("checkuser", checkuser)
 )
 
 telegram_app.add_handler(
