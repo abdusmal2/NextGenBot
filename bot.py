@@ -61,10 +61,8 @@ try:
 except:
     pass
   
-  # DEBUG SUBSCRIPTION
+# DEBUG SUBSCRIPTION
 async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    user_id = int(context.args[0])
 
     cursor.execute(
         """
@@ -72,13 +70,14 @@ async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
         FROM users
         WHERE user_id=?
         """,
-        (user_id,)
+        (update.effective_user.id,)
     )
 
     result = cursor.fetchone()
 
     await update.message.reply_text(
-        str(result)
+        f"User ID: {update.effective_user.id}\n"
+        f"Data: {result}"
     )
 
 cursor.execute("""
