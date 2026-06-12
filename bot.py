@@ -230,11 +230,11 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         if not result:
 
-    await query.message.reply_text(
-        "⚠️ Account Not Found\n\n"
-        "Please send /start first and try again."
-    )
-    return
+            await query.message.reply_text(
+                "⚠️ Account Not Found\n\n"
+                "Please send /start first and try again."
+            )
+            return
 
 if int(result[0]) != 1:
 
