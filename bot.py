@@ -874,6 +874,18 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             conn.commit()
 
+                       try:
+                await context.bot.send_message(
+                    chat_id=user_id,
+                    text=(
+                        "✅ VIP Access Activated!\n\n"
+                        "You have successfully joined the VIP group.\n\n"
+                        "All future subscriptions can be managed through /start."
+                    )
+                )
+            except:
+                pass 
+
             # DELETE SAVED INVITE
             cursor.execute(
                 "DELETE FROM invites WHERE user_id=?",
