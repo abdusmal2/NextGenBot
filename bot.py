@@ -874,7 +874,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             conn.commit()
 
-                       try:
+            try:
                 await context.bot.send_message(
                     chat_id=user_id,
                     text=(
@@ -884,7 +884,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     )
                 )
             except:
-                pass 
+                pass
 
             # DELETE SAVED INVITE
             cursor.execute(
