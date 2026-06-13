@@ -850,6 +850,21 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             messages = cursor.fetchall()
 
+            for msg in messages:
+
+                try:
+                    await context.bot.delete_message(
+                        chat_id=user_id,
+                        message_id=msg[0]
+                    )
+                except:
+                    pass
+
+            cursor.execute(
+                "UPDATE users SET vip_joined=1 WHERE user_id=?",
+                (user_id,)
+            )
+
             cursor.execute(
                 "UPDATE users SET vip_joined=1 WHERE user_id=?",
                 (user_id,)
