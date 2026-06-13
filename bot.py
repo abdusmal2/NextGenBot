@@ -844,11 +844,11 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 pass
 
             cursor.execute(
-    "SELECT message_id FROM user_messages WHERE user_id=?",
-    (user_id,)
-)
+                "SELECT message_id FROM user_messages WHERE user_id=?",
+                (user_id,)
+            )
 
-messages = cursor.fetchall()
+            messages = cursor.fetchall()
 
             cursor.execute(
                 "UPDATE users SET vip_joined=1 WHERE user_id=?",
