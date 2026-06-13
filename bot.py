@@ -236,15 +236,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return
 
-if int(result[0]) != 1:
+        if int(result[0]) != 1:
 
-    await query.message.reply_text(
+            await query.message.reply_text(
                 "❌ No Active Subscription\n\n"
                 "You do not currently have an active VIP subscription.\n\n"
                 "🎬 Subscribe to VIP to access exclusive dubbed movies and premium content.\n\n"
                 "👇 Purchase a plan below."
             )
-
             return
 
         expiry_date = result[1]
