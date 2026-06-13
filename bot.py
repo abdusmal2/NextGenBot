@@ -859,17 +859,13 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     )
                 except:
                     pass
-                              cursor.execute(
+
+            cursor.execute(
                 "DELETE FROM user_messages WHERE user_id=?",
                 (user_id,)
             )
 
             conn.commit()
-
-            cursor.execute(
-                "UPDATE users SET vip_joined=1 WHERE user_id=?",
-                (user_id,)
-            )
 
             cursor.execute(
                 "UPDATE users SET vip_joined=1 WHERE user_id=?",
