@@ -676,17 +676,17 @@ async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     msg = await update.message.reply_text(
-    "✅ Receipt received.\n\n"
-    "Click the button below to notify admin.",
-    reply_markup=InlineKeyboardMarkup(keyboard)
-)
+        "✅ Receipt received.\n\n"
+        "Click the button below to notify admin.",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
-cursor.execute(
-    "INSERT INTO user_messages VALUES (?, ?)",
-    (user.id, msg.message_id)
-)
+    cursor.execute(
+        "INSERT INTO user_messages VALUES (?, ?)",
+        (user.id, msg.message_id)
+    )
 
-conn.commit()
+    conn.commit()
 # CUSTOM PLAN HANDLER
 async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
