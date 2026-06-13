@@ -103,6 +103,13 @@ CREATE TABLE IF NOT EXISTS invites (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS user_messages (
+    user_id INTEGER,
+    message_id INTEGER
+)
+""")
+
 conn.commit()
 
 # FASTAPI
@@ -835,6 +842,13 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             except:
                 pass
+
+            cursor.execute(
+    "SELECT message_id FROM user_messages WHERE user_id=?",
+    (user_id,)
+)
+
+messages = cursor.fetchall()
 
             cursor.execute(
                 "UPDATE users SET vip_joined=1 WHERE user_id=?",
