@@ -117,6 +117,16 @@ app = FastAPI()
 
 telegram_app = Application.builder().token(BOT_TOKEN).build()
 
+# TEST
+async def totalusers(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    cursor.execute("SELECT COUNT(*) FROM users")
+
+    count = cursor.fetchone()[0]
+
+    await update.message.reply_text(
+        f"Total users: {count}"
+    )
 
 # START COMMAND
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
