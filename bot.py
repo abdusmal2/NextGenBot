@@ -66,7 +66,11 @@ async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     cursor.execute(
         """
-        SELECT paid, expiry_date, vip_joined
+        SELECT paid,
+               expiry_date,
+               vip_joined,
+               payment_pending,
+               plan_months
         FROM users
         WHERE user_id=?
         """,
