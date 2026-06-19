@@ -939,6 +939,9 @@ telegram_app.add_handler(CommandHandler("start", start))
 telegram_app.add_handler(CommandHandler("groupid", groupid))
 telegram_app.add_handler(CallbackQueryHandler(button_handler))
 telegram_app.add_handler(
+    CommandHandler("totalusers", totalusers)
+)
+telegram_app.add_handler(
     CommandHandler("debug", debug)
 )
 telegram_app.add_handler(
