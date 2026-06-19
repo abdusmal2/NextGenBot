@@ -542,6 +542,43 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
 
         expiry_date = expiry_dt.strftime("%Y-%m-%d")
+        
+                if vip_joined == 1:
+
+            cursor.execute(
+                """
+                UPDATE users
+                SET paid=1,
+                    expiry_date=?,
+                    receipt_file_id=NULL,
+                    payment_pending=0
+                WHERE user_id=?
+                """,
+                (expiry_date, user_id)
+            )
+
+            conn.commit()
+
+            await context.bot.send_message(
+                chat_id=user_id,
+                text=(
+                    "✅ Subscription Renewed!\n\n"
+                    f"📅 New Expiry Date: {expiry_date}\n\n"
+                    "You are already a member of the VIP group, "
+                    "so no new invitation link is required."
+                )
+            )
+
+            try:
+                await query.message.edit_caption(
+                    caption="✅ User subscription renewed successfully."
+                )
+            except:
+                await query.message.edit_text(
+                    "✅ User subscription renewed successfully."
+                )
+
+            return
 
         invite = await context.bot.create_chat_invite_link(
             chat_id=VIP_GROUP_ID,
