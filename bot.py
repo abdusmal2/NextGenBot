@@ -498,7 +498,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         cursor.execute(
             """
-            SELECT plan_months, expiry_date
+            SELECT plan_months, expiry_date, vip_joined
             FROM users
             WHERE user_id=?
             """,
@@ -509,6 +509,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         months = result[0]
         current_expiry = result[1]
+        vip_joined = result[2]
 
         today = datetime.now()
 
