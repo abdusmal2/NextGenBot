@@ -543,7 +543,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         expiry_date = expiry_dt.strftime("%Y-%m-%d")
         
-                if vip_joined == 1:
+        if vip_joined == 1:
 
             cursor.execute(
                 """
