@@ -877,6 +877,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         result = cursor.fetchone()
+        print("JOIN RESULT:", result)
 
         if result:
 
