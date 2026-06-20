@@ -149,7 +149,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     cursor.execute(
-        "INSERT OR IGNORE INTO users (user_id, username) VALUES (%s, %s)",
+        """
+        INSERT INTO users (user_id, username)
+        VALUES (%s, %s)
+        ON CONFLICT (user_id) DO NOTHING
+        """,
         (user.id, user.username)
     )
 
