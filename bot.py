@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import psycopg2
+import os
 from fastapi import FastAPI, Request
 from telegram import (
     Update,
@@ -22,7 +24,12 @@ ADMIN_ID = 7283280924
 VIP_GROUP_ID = -1003910567293
 
 # DATABASE
-conn = sqlite3.connect("users.db", check_same_thread=False)
+conn = psycopg2.connect(
+    os.environ["DATABASE_URL"]
+)
+
+conn.autocommit = True
+
 cursor = conn.cursor()
 
 # ADD RECEIPT COLUMN
@@ -72,7 +79,7 @@ async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
                payment_pending,
                plan_months
         FROM users
-        WHERE user_id=?
+        WHERE user_id=%s
         """,
         (update.effective_user.id,)
     )
@@ -142,7 +149,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     cursor.execute(
-        "INSERT OR IGNORE INTO users (user_id, username) VALUES (?, ?)",
+        "INSERT OR IGNORE INTO users (user_id, username) VALUES (%s, %s)",
         (user.id, user.username)
     )
 
@@ -217,7 +224,7 @@ async def checkuser(update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         SELECT *
         FROM users
-        WHERE user_id=?
+        WHERE user_id=%s
         """,
         (user_id,)
     )
@@ -242,7 +249,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             """
             SELECT paid, expiry_date
             FROM users
-            WHERE user_id=?
+            WHERE user_id=%s
             """,
             (query.from_user.id,)
         )
@@ -301,7 +308,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "plan_1":
 
         cursor.execute(
-            "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
+            "UPDATE users SET plan_months=?, amount=? WHERE user_id=%s",
             (1, 500, query.from_user.id)
         )
 
@@ -333,7 +340,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "plan_2":
 
         cursor.execute(
-            "UPDATE users SET plan_months=?, amount=? WHERE user_id=?",
+            "UPDATE users SET plan_months=?, amount=? WHERE user_id=%s",
             (2, 1000, query.from_user.id)
         )
 
@@ -365,7 +372,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "custom_plan":
 
         cursor.execute(
-            "UPDATE users SET waiting_custom_plan=1 WHERE user_id=?",
+            "UPDATE users SET waiting_custom_plan=1 WHERE user_id=%s",
             (query.from_user.id,)
         )
 
@@ -419,7 +426,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = query.from_user
 
         cursor.execute(
-            "SELECT plan_months, amount, receipt_file_id, payment_pending FROM users WHERE user_id=?",
+            "SELECT plan_months, amount, receipt_file_id, payment_pending FROM users WHERE user_id=%s",
             (user.id,)
         )
 
@@ -468,7 +475,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             """
             UPDATE users
             SET payment_pending=1
-            WHERE user_id=?
+            WHERE user_id=%s
             """,
             (user.id,)
         )
@@ -504,7 +511,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             """
             SELECT plan_months, expiry_date, vip_joined
             FROM users
-            WHERE user_id=?
+            WHERE user_id=%s
             """,
             (user_id,)
         )
@@ -556,7 +563,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     expiry_date=?,
                     receipt_file_id=NULL,
                     payment_pending=0
-                WHERE user_id=?
+                WHERE user_id=%s
                 """,
                 (expiry_date, user_id)
             )
@@ -590,7 +597,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
         cursor.execute(
-            "INSERT INTO invites VALUES (?, ?, ?)",
+            "INSERT INTO invites VALUES (%s, %s, %s)",
             (
                 user_id,
                 invite.invite_link,
@@ -605,7 +612,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     expiry_date=?,
     receipt_file_id=NULL,
     payment_pending=0
-    WHERE user_id=?
+    WHERE user_id=%s
             """,
             (expiry_date, user_id)
         )
@@ -636,7 +643,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # SAVE MESSAGE ID
         cursor.execute(
-            "UPDATE invites SET invite_link_id=? WHERE user_id=?",
+            "UPDATE invites SET invite_link_id=? WHERE user_id=%s",
             (invite_message.message_id, user_id)
         )
 
@@ -662,7 +669,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             """
             UPDATE users
             SET payment_pending=0
-            WHERE user_id=?
+            WHERE user_id=%s
             """,
             (user_id,)
         )
@@ -697,7 +704,7 @@ async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
 
     cursor.execute(
-        "SELECT plan_months FROM users WHERE user_id=?",
+        "SELECT plan_months FROM users WHERE user_id=%s",
         (user.id,)
     )
 
@@ -712,7 +719,7 @@ async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     photo = update.message.photo[-1]
 
     cursor.execute(
-        "UPDATE users SET receipt_file_id=? WHERE user_id=?",
+        "UPDATE users SET receipt_file_id=? WHERE user_id=%s",
         (photo.file_id, user.id)
     )
 
@@ -734,7 +741,7 @@ async def receipt_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     cursor.execute(
-        "INSERT INTO user_messages VALUES (?, ?)",
+        "INSERT INTO user_messages VALUES (%s, %s)",
         (user.id, msg.message_id)
     )
 
@@ -755,7 +762,7 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     months = int(update.message.text)
 
     cursor.execute(
-        "SELECT waiting_custom_plan FROM users WHERE user_id=?",
+        "SELECT waiting_custom_plan FROM users WHERE user_id=%s",
         (user.id,)
     )
 
@@ -776,7 +783,7 @@ async def custom_plan_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
             amount=?,
             waiting_custom_plan=0,
             receipt_file_id=NULL
-        WHERE user_id=?
+        WHERE user_id=%s
         """,
         (months, amount, user.id)
     )
@@ -860,7 +867,7 @@ async def expiry_checker(context: ContextTypes.DEFAULT_TYPE):
             UPDATE users
             SET paid=0,
                 vip_joined=0
-            WHERE user_id=?
+            WHERE user_id=%s
             """,
             (user_id,)
         )
@@ -876,7 +883,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # FIND USER INVITE
         cursor.execute(
-            "SELECT invite_link, invite_link_id FROM invites WHERE user_id=?",
+            "SELECT invite_link, invite_link_id FROM invites WHERE user_id=%s",
             (user_id,)
         )
 
@@ -904,7 +911,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 pass
 
             cursor.execute(
-                "SELECT message_id FROM user_messages WHERE user_id=?",
+                "SELECT message_id FROM user_messages WHERE user_id=%s",
                 (user_id,)
             )
 
@@ -921,14 +928,14 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     pass
 
             cursor.execute(
-                "DELETE FROM user_messages WHERE user_id=?",
+                "DELETE FROM user_messages WHERE user_id=%s",
                 (user_id,)
             )
 
             conn.commit()
 
             cursor.execute(
-                "UPDATE users SET vip_joined=1 WHERE user_id=?",
+                "UPDATE users SET vip_joined=1 WHERE user_id=%s",
                 (user_id,)
             )
 
@@ -948,7 +955,7 @@ async def new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             # DELETE SAVED INVITE
             cursor.execute(
-                "DELETE FROM invites WHERE user_id=?",
+                "DELETE FROM invites WHERE user_id=%s",
                 (user_id,)
             )
 
