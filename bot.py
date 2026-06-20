@@ -93,7 +93,7 @@ async def debug(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
-    user_id INTEGER PRIMARY KEY,
+    user_id BIGINT PRIMARY KEY,
     username TEXT,
     join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     paid INTEGER DEFAULT 0,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS invites (
-    user_id INTEGER,
+    user_id BIGINT,
     invite_link TEXT,
     invite_link_id TEXT
 )
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS invites (
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS user_messages (
-    user_id INTEGER,
+    user_id BIGINT,
     message_id INTEGER
 )
 """)
